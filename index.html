@@ -40,7 +40,7 @@
       font: 15px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     a { color: var(--blue); }
-    button, input { font: inherit; }
+    button, input, select { font: inherit; }
     .shell { width: min(1180px, calc(100% - 36px)); margin: auto; }
     header {
       border-bottom: 1px solid rgba(130,160,195,.16);
@@ -157,6 +157,39 @@
     .footer-inner { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
     .hidden { display:none !important; }
 
+    /* Panel y catálogo */
+    .daterange { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .daterange input, .dim-select {
+      padding:9px 10px; border-radius:10px; border:1px solid var(--border);
+      color:var(--text); background:#091525; color-scheme:dark; outline:none;
+    }
+    .daterange input:focus, .dim-select:focus { border-color:var(--blue); }
+    .daterange span { color:var(--muted); font-size:12px; }
+    .donut-area { display:flex; gap:30px; align-items:center; flex-wrap:wrap; padding:8px 0 4px; }
+    .donut-area svg { flex:0 0 auto; }
+    .legend { display:grid; gap:8px; min-width:260px; flex:1; }
+    .legend-item { display:flex; align-items:center; gap:10px; font-size:13px; color:#c4d1e0; }
+    .legend-swatch { width:11px; height:11px; border-radius:3px; flex:0 0 auto; }
+    .legend-name { overflow:hidden; text-overflow:ellipsis; }
+    .legend-pct { color:var(--muted); font-size:12px; margin-left:auto; white-space:nowrap; }
+    .mini-note { color:var(--muted); font-size:12px; margin:10px 0 0; }
+    .cat-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .cat-table th, .cat-table td { border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top; }
+    .cat-table th { background:#172a42; color:#e8f0fa; white-space:nowrap; }
+    .cat-table td code {
+      background:#071321; border:1px solid #263a53; border-radius:5px;
+      padding:2px 5px; color:#8ce2dc; white-space:nowrap;
+    }
+    .cat-scroll { overflow-x:auto; }
+    .badge {
+      display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700;
+      border:1px solid var(--border); background:rgba(9,21,37,.6);
+    }
+    .badge-critica { color:#ffb2b2; border-color:rgba(255,119,119,.45); }
+    .badge-alta { color:#f4c76b; border-color:rgba(244,199,107,.45); }
+    .badge-media { color:#58a6ff; border-color:rgba(88,166,255,.45); }
+    .badge-kev { color:#48d597; border-color:rgba(72,213,151,.45); }
+
     @media (max-width: 700px) {
       .top-status { display:none; }
       .hero { padding-top:38px; }
@@ -165,6 +198,7 @@
       .search-wrap { max-width:none; }
       .section-heading { align-items:start; flex-direction:column; }
       .report { padding:16px; }
+      .donut-area { justify-content:center; }
     }
   </style>
 </head>
@@ -200,14 +234,14 @@
 
     <section class="stats" aria-label="Estado de los informes">
       <div class="stat">
-        <div class="stat-label">Informes diarios</div>
+        <div class="stat-label">Entradas diarias</div>
         <div class="stat-value" id="dailyCount">—</div>
-        <div class="stat-note">Entradas detectadas en el historial</div>
+        <div class="stat-note">Días con informe publicado</div>
       </div>
       <div class="stat">
-        <div class="stat-label">Informes semanales</div>
+        <div class="stat-label">Resúmenes semanales</div>
         <div class="stat-value" id="weeklyCount">—</div>
-        <div class="stat-note">Resúmenes disponibles</div>
+        <div class="stat-note">Semanas consolidadas</div>
       </div>
       <div class="stat">
         <div class="stat-label">Última actualización</div>
@@ -221,11 +255,23 @@
         <div class="tabs" role="tablist" aria-label="Tipo de informe">
           <button class="tab" id="dailyTab" role="tab" aria-selected="true" aria-controls="reportContent" data-report="daily">Informes diarios</button>
           <button class="tab" id="weeklyTab" role="tab" aria-selected="false" aria-controls="reportContent" data-report="weekly">Informes semanales</button>
+          <button class="tab" id="dashboardTab" role="tab" aria-selected="false" aria-controls="reportContent" data-report="dashboard">Panel</button>
+          <button class="tab" id="catalogTab" role="tab" aria-selected="false" aria-controls="reportContent" data-report="catalog">Catálogo CVE</button>
         </div>
         <div class="search-wrap">
           <input class="search" id="searchInput" type="search" placeholder="Buscar CVE, producto, amenaza…" aria-label="Buscar en los informes">
         </div>
         <button class="refresh" id="refreshButton" type="button">↻ Actualizar</button>
+        <div class="daterange">
+          <span>Desde</span><input type="date" id="dateFrom" aria-label="Fecha inicial">
+          <span>Hasta</span><input type="date" id="dateTo" aria-label="Fecha final">
+          <button class="refresh" id="clearDates" type="button" title="Quitar filtro de fechas">✕</button>
+          <select id="chartDim" class="dim-select" aria-label="Dimensión del panel">
+            <option value="severidad">Panel: severidad</option>
+            <option value="explotacion">Panel: explotación</option>
+            <option value="mitre">Panel: técnica MITRE</option>
+          </select>
+        </div>
       </div>
 
       <div class="content" id="reportContent" role="tabpanel" aria-live="polite">
@@ -247,11 +293,17 @@
       weekly: { file: "INFORMES_SEMANALES.md", title: "Informes semanales", description: "Resumen consolidado de amenazas y vulnerabilidades de cada semana." }
     };
 
+    const PALETTE = ["#58a6ff", "#55d6d0", "#48d597", "#f4c76b", "#ff7777", "#b58cff", "#7fd1f9", "#f2a07b", "#c9d1d9", "#d2a8ff"];
+
     let currentReport = "daily";
     let reportText = { daily: "", weekly: "" };
+    let entries = { daily: [], weekly: [] };
 
     const content = document.getElementById("reportContent");
     const searchInput = document.getElementById("searchInput");
+    const dateFrom = document.getElementById("dateFrom");
+    const dateTo = document.getElementById("dateTo");
+    const chartDim = document.getElementById("chartDim");
 
     function safeMarkdown(markdown) {
       if (!window.marked || !window.DOMPurify) {
@@ -259,6 +311,10 @@
       }
       const raw = window.marked.parse(markdown || "", { breaks: true, gfm: true });
       return window.DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+    }
+
+    function stripJsonBlocks(text) {
+      return (text || "").replace(/```json[\s\S]*?```/g, "").trim();
     }
 
     function splitReports(markdown) {
@@ -276,46 +332,244 @@
       return match ? match[1].replace(/[*_`]/g, "").trim() : "Informe";
     }
 
-    function countEntries(markdown) {
-      return splitReports(markdown).length;
-    }
-
     function extractDate(text) {
       const match = text.match(/\b(20\d{2}[-/]\d{2}[-/]\d{2}|\d{1,2}[/-]\d{1,2}[/-]20\d{2})\b/);
       return match ? match[0] : "";
     }
 
-    function renderCurrent() {
-      const cfg = REPORTS[currentReport];
-      const all = splitReports(reportText[currentReport]);
-      const query = searchInput.value.trim().toLocaleLowerCase("es");
-      const filtered = all.filter(part => !query || part.toLocaleLowerCase("es").includes(query));
+    function normalizeDate(value) {
+      if (!value) return "";
+      const iso = value.match(/^(20\d{2})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+      if (iso) return `${iso[1]}-${String(+iso[2]).padStart(2,"0")}-${String(+iso[3]).padStart(2,"0")}`;
+      const dmy = value.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](20\d{2})$/);
+      if (dmy) return `${dmy[3]}-${String(+dmy[2]).padStart(2,"0")}-${String(+dmy[1]).padStart(2,"0")}`;
+      return "";
+    }
 
-      const cards = filtered.map((part, index) => {
-        const heading = getHeading(part);
-        const date = extractDate(heading) || extractDate(part);
+    function parseEntry(part) {
+      let meta = null;
+      const jsonMatch = part.match(/```json\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        try { meta = JSON.parse(jsonMatch[1]); } catch (error) { meta = null; }
+      }
+      const dateISO = normalizeDate((meta && meta.fecha) || extractDate(part));
+      return { md: stripJsonBlocks(part), meta, dateISO };
+    }
+
+    function countEntries(markdown) {
+      return splitReports(markdown).length;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[char]);
+    }
+
+    // ---- Filtro de fechas ----
+    function inDateRange(entry) {
+      if (!entry.dateISO) return true;
+      const from = dateFrom.value, to = dateTo.value;
+      if (from && entry.dateISO < from) return false;
+      if (to && entry.dateISO > to) return false;
+      return true;
+    }
+
+    function filteredEntries(source) {
+      return entries[source].filter(inDateRange);
+    }
+
+    // ---- Tarjetas de informes ----
+    function renderCards(source) {
+      const cfg = REPORTS[source];
+      const all = entries[source];
+      const shown = filteredEntries(source);
+      const query = searchInput.value.trim().toLocaleLowerCase("es");
+      const filtered = shown.filter(entry => {
+        if (!query) return true;
+        const hay = (entry.md + " " + JSON.stringify(entry.meta || "")).toLocaleLowerCase("es");
+        return hay.includes(query);
+      });
+
+      const cards = filtered.map(entry => {
+        const heading = getHeading(entry.md);
+        const date = entry.dateISO;
+        const badge = source === "daily" ? "INFORME DIARIO" : "RESUMEN SEMANAL";
         return `<article class="report">
           <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
-            <div style="color:#55d6d0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase">${currentReport === "daily" ? "INFORME DIARIO" : "RESUMEN SEMANAL"}</div>
+            <div style="color:#55d6d0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase">${badge}</div>
             ${date ? `<div style="color:#9aacc2;font-size:12px">${escapeHtml(date)}</div>` : ""}
           </div>
-          ${safeMarkdown(part)}
+          ${safeMarkdown(entry.md)}
         </article>`;
       }).join("");
 
       content.innerHTML = `
         <div class="section-heading">
           <div><h2>${cfg.title}</h2><p>${cfg.description}</p></div>
-          <div class="count">${filtered.length} de ${all.length} informes</div>
+          <div class="count">${filtered.length} de ${all.length} entradas</div>
         </div>
-        ${filtered.length ? cards : `<div class="empty">${all.length ? "No hay informes que coincidan con la búsqueda." : `Todavía no hay contenido en <strong>${cfg.file}</strong>. Cuando el agente publique el primer informe, aparecerá aquí automáticamente.`}</div>`}
+        ${filtered.length ? cards : `<div class="empty">${all.length ? (all.some(inDateRange) ? "No hay entradas que coincidan con la búsqueda." : "No hay entradas en el rango de fechas seleccionado.") : `Todavía no hay contenido en <strong>${cfg.file}</strong>. Cuando el agente publique el primer informe, aparecerá aquí automáticamente.`}</div>`}
       `;
     }
 
-    function escapeHtml(value) {
-      return value.replace(/[&<>"']/g, char => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      })[char]);
+    // ---- Panel (donut) ----
+    function cvePool() {
+      // Los CVE se toman de los informes diarios (fuente granular).
+      // Si el mismo CVE aparece en varias entradas, se usa la mención más reciente.
+      const pool = new Map();
+      for (const entry of filteredEntries("daily")) {
+        for (const cve of ((entry.meta && entry.meta.cves) || [])) {
+          if (!cve || !cve.id) continue;
+          if (!pool.has(cve.id)) pool.set(cve.id, []);
+          pool.get(cve.id).push({ cve, date: entry.dateISO });
+        }
+      }
+      const out = [];
+      for (const mentions of pool.values()) {
+        mentions.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+        out.push(mentions[0].cve);
+      }
+      return out;
+    }
+
+    function donutSegmentColor(index) { return PALETTE[index % PALETTE.length]; }
+
+    function donutSvg(data, total) {
+      const R = 70, SW = 26, C = 2 * Math.PI * R;
+      let offset = 0;
+      const segments = data.map((d, i) => {
+        const frac = d.count / total;
+        const dash = `${Math.max(frac * C - 1.5, 0.5)} ${C}`;
+        const seg = `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${donutSegmentColor(i)}"
+          stroke-width="${SW}" stroke-dasharray="${dash}" stroke-dashoffset="${-offset}"
+          transform="rotate(-90 100 100)" stroke-linecap="butt"></circle>`;
+        offset += frac * C;
+        return seg;
+      }).join("");
+      return `<svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="Distribución porcentual">${segments}</svg>`;
+    }
+
+    function dimensionOf(cve) {
+      const dim = chartDim ? chartDim.value : "severidad";
+      if (dim === "mitre") {
+        if (!cve.mitre || !cve.mitre.id) return "Sin técnica MITRE documentada";
+        return `${cve.mitre.id} ${cve.mitre.nombre || ""}`.trim();
+      }
+      if (dim === "explotacion") return cve.explotacion || "Sin dato";
+      const s = String(cve.severidad || "").toLocaleLowerCase("es");
+      if (s.includes("crit")) return "Crítica";
+      if (s.includes("alta") || s.includes("high")) return "Alta";
+      if (s.includes("media") || s.includes("med")) return "Media";
+      if (s.includes("baja") || s.includes("low")) return "Baja";
+      return "Sin dato";
+    }
+
+    function renderDashboard() {
+      const pool = cvePool();
+      const query = searchInput.value.trim().toLocaleLowerCase("es");
+      const used = query ? pool.filter(c => JSON.stringify(c).toLocaleLowerCase("es").includes(query)) : pool;
+      const total = used.length;
+      const dim = chartDim ? chartDim.value : "severidad";
+      const labels = { severidad: "por severidad (CVSS)", explotacion: "por estado de explotación", mitre: "por técnica MITRE ATT&CK" };
+
+      if (!total) {
+        content.innerHTML = `
+          <div class="section-heading"><div><h2>Panel</h2><p>Distribución porcentual de las vulnerabilidades informadas ${labels[dim]}.</p></div></div>
+          <div class="empty">Sin CVEs para el rango de fechas seleccionado. Amplía el rango o borra el filtro con ✕.</div>`;
+        return;
+      }
+
+      const counts = new Map();
+      for (const cve of used) {
+        const key = dimensionOf(cve);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+      const data = [...counts.entries()].map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const legend = data.map((d, i) => {
+        const pct = (d.count / total * 100);
+        return `<div class="legend-item">
+          <span class="legend-swatch" style="background:${donutSegmentColor(i)}"></span>
+          <span class="legend-name">${escapeHtml(d.name)}</span>
+          <span class="legend-pct">${pct.toFixed(1)}% · ${d.count}/${total}</span>
+        </div>`;
+      }).join("");
+
+      const kev = used.filter(c => /kev/i.test(c.explotacion || "")).length;
+      const mitreDoc = used.filter(c => c.mitre && c.mitre.id).length;
+
+      content.innerHTML = `
+        <div class="section-heading">
+          <div><h2>Panel</h2><p>Distribución porcentual de las vulnerabilidades informadas ${labels[dim]}.</p></div>
+          <div class="count">${total} CVEs · ${filteredEntries("daily").length} entradas diarias en el rango</div>
+        </div>
+        <div class="donut-area">
+          ${donutSvg(data, total)}
+          <div class="legend">${legend}</div>
+        </div>
+        <p class="mini-note">En el rango: ${kev} CVEs en el catálogo KEV de CISA · ${mitreDoc} con técnica MITRE ATT&CK documentada en el informe. El panel usa las entradas de los informes diarios (el resumen semanal consolida esas mismas vulnerabilidades y no se cuenta dos veces). Ajusta el rango de fechas arriba y el gráfico se recalcula solo.</p>`;
+    }
+
+    // ---- Catálogo CVE ----
+    function severityBadge(sev) {
+      const s = String(sev || "").toLocaleLowerCase("es");
+      const cls = s.includes("crit") ? "badge-critica" : (s.includes("alta") || s.includes("high") ? "badge-alta" : (s.includes("media") || s.includes("med") ? "badge-media" : ""));
+      return `<span class="badge ${cls}">${escapeHtml(sev || "Sin dato")}</span>`;
+    }
+
+    function exploitBadge(exp) {
+      if (/kev/i.test(exp || "")) return `<span class="badge badge-kev">KEV</span>`;
+      return escapeHtml(exp || "Sin dato");
+    }
+
+    function renderCatalog() {
+      const pool = cvePool();
+      const query = searchInput.value.trim().toLocaleLowerCase("es");
+      const used = query ? pool.filter(c => JSON.stringify(c).toLocaleLowerCase("es").includes(query)) : pool;
+
+      const dates = filteredEntries("daily").map(e => e.dateISO).filter(Boolean).sort();
+      const range = dates.length ? `${dates[0]} → ${dates[dates.length - 1]}` : "sin datos";
+
+      const rows = used.map(c => `<tr>
+        <td><code>${escapeHtml(c.id)}</code></td>
+        <td>${escapeHtml(c.producto || "—")}</td>
+        <td>${escapeHtml(c.cvss ?? "—")}</td>
+        <td>${severityBadge(c.severidad)}</td>
+        <td>${c.mitre && c.mitre.id ? `<code>${escapeHtml(c.mitre.id)}</code> ${escapeHtml(c.mitre.nombre || "")}` : "Sin técnica MITRE documentada"}</td>
+        <td>${exploitBadge(c.explotacion)}</td>
+        <td>${escapeHtml(c.parche || "—")}</td>
+        <td>${escapeHtml(c.runbook || "—")}</td>
+      </tr>`).join("");
+
+      const threats = filteredEntries("daily").flatMap(e => ((e.meta && e.meta.otras_amenazas) || []));
+      const threatRows = threats.map(t => `<tr>
+        <td>${escapeHtml(t.nombre || "—")}</td>
+        <td>${escapeHtml(t.tipo || "—")}</td>
+        <td>${escapeHtml(t.resumen || "—")}</td>
+      </tr>`).join("");
+
+      content.innerHTML = `
+        <div class="section-heading">
+          <div><h2>Catálogo CVE</h2><p>Cada CVE con su tratamiento (parche) y runbook SOC L1, tomados del informe donde se publicó.</p></div>
+          <div class="count">${used.length} CVEs · rango ${range}</div>
+        </div>
+        ${used.length ? `<div class="cat-scroll"><table class="cat-table">
+          <thead><tr><th>CVE</th><th>Producto / ataque</th><th>CVSS</th><th>Severidad</th><th>MITRE ATT&CK</th><th>Explotación</th><th>Parche / tratamiento</th><th>Runbook SOC L1</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>` : `<div class="empty">Sin CVEs en el rango seleccionado.</div>`}
+        ${threatRows ? `<h3 style="margin:26px 0 10px;color:#dcecff">Otras amenazas</h3>
+        <div class="cat-scroll"><table class="cat-table">
+          <thead><tr><th>Amenaza</th><th>Tipo</th><th>Resumen</th></tr></thead>
+          <tbody>${threatRows}</tbody>
+        </table></div>` : ""}`;
+    }
+
+    function renderCurrent() {
+      if (currentReport === "dashboard") return renderDashboard();
+      if (currentReport === "catalog") return renderCatalog();
+      return renderCards(currentReport);
     }
 
     async function loadReport(key) {
@@ -341,12 +595,14 @@
       try {
         const results = await Promise.allSettled([loadReport("daily"), loadReport("weekly")]);
         const failures = results.filter(result => result.status === "rejected");
-        document.getElementById("dailyCount").textContent = countEntries(reportText.daily);
-        document.getElementById("weeklyCount").textContent = countEntries(reportText.weekly);
+        entries.daily = splitReports(reportText.daily).map(parseEntry);
+        entries.weekly = splitReports(reportText.weekly).map(parseEntry);
+        document.getElementById("dailyCount").textContent = entries.daily.length;
+        document.getElementById("weeklyCount").textContent = entries.weekly.length;
 
-        const dates = [extractDate(reportText.daily), extractDate(reportText.weekly)].filter(Boolean);
-        document.getElementById("lastUpdated").textContent = dates[0] || "Sin datos";
-        document.getElementById("connectionStatus").textContent = failures.length ? "Conexión parcial" : "Informes sincronizados";
+        const dates = [...entries.daily, ...entries.weekly].map(e => e.dateISO).filter(Boolean).sort();
+        document.getElementById("lastUpdated").textContent = dates.length ? dates[dates.length - 1] : "Sin datos";
+        document.getElementById("connectionStatus").textContent = failures.length === 2 ? "Sin conexión" : (failures.length ? "Conexión parcial" : "Informes sincronizados");
 
         if (failures.length === 2) {
           content.innerHTML = `<div class="error">No se pudieron cargar los archivos Markdown. Comprueba que INFORMES_DIARIOS.md e INFORMES_SEMANALES.md estén publicados en el repositorio de GitHub Pages.</div>`;
@@ -368,6 +624,12 @@
     });
 
     searchInput.addEventListener("input", renderCurrent);
+    dateFrom.addEventListener("change", renderCurrent);
+    dateTo.addEventListener("change", renderCurrent);
+    if (chartDim) chartDim.addEventListener("change", renderCurrent);
+    document.getElementById("clearDates").addEventListener("click", () => {
+      dateFrom.value = ""; dateTo.value = ""; renderCurrent();
+    });
     document.getElementById("refreshButton").addEventListener("click", refreshReports);
 
     refreshReports();
