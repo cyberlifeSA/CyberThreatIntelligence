@@ -243,8 +243,8 @@
 
   <script>
     const REPORTS = {
-      daily: { file: "INFORMES_DIARIOS.md", title: "Informes diarios", description: "Hallazgos y vulnerabilidades documentados día a día." },
-      weekly: { file: "INFORMES_SEMANALES.md", title: "Informes semanales", description: "Resumen consolidado de amenazas y vulnerabilidades de cada semana." }
+      daily: { file: "web/INFORMES_DIARIOS.md", title: "Informes diarios", description: "Hallazgos y vulnerabilidades documentados día a día." },
+      weekly: { file: "web/INFORMES_SEMANALES.md", title: "Informes semanales", description: "Resumen consolidado de amenazas y vulnerabilidades de cada semana." }
     };
 
     let currentReport = "daily";
@@ -349,7 +349,7 @@
         document.getElementById("connectionStatus").textContent = failures.length ? "Conexión parcial" : "Informes sincronizados";
 
         if (failures.length === 2) {
-          content.innerHTML = `<div class="error">No se pudieron cargar los archivos Markdown. Comprueba que INFORMES_DIARIOS.md e INFORMES_SEMANALES.md estén publicados junto a index.html en la rama configurada para GitHub Pages.</div>`;
+          content.innerHTML = `<div class="error">No se pudieron cargar los archivos Markdown. Comprueba que web/INFORMES_DIARIOS.md y web/INFORMES_SEMANALES.md estén publicados en el repositorio de GitHub Pages.</div>`;
           return;
         }
         renderCurrent();
