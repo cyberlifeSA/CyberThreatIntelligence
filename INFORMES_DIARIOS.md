@@ -1,4 +1,4 @@
-﻿# Informe CTI Diario â€” Vulnerabilidades del 13/11/2026
+# Informe CTI Diario â€” Vulnerabilidades del 13/11/2026
 
 **Fecha del informe:** 14/11/2026 Â· **Cobertura:** novedades del viernes 13 de noviembre de 2026 (zona horaria America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, fabricantes oficiales (UnrealIRCd, Check Point), CERT locales (CCB BÃ©lgica), investigaciÃ³n de proveedores.
