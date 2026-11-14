@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="Portal de inteligencia de amenazas, vulnerabilidades y análisis defensivo SOC.">
+  <title>Cyber Threat Intelligence | CyberLife</title>
+
+  <!-- Markdown renderer + sanitizer. The reports themselves are loaded from this repository. -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08111f;
+      --panel: #101d30;
+      --panel-2: #14243a;
+      --border: #263a53;
+      --text: #e8f0fa;
+      --muted: #9aacc2;
+      --blue: #58a6ff;
+      --cyan: #55d6d0;
+      --green: #48d597;
+      --yellow: #f4c76b;
+      --red: #ff7777;
+      --shadow: 0 18px 50px rgba(0,0,0,.24);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(39,111,181,.18), transparent 35rem),
+        radial-gradient(ellipse at 90% 12%, rgba(34,183,173,.09), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--blue); }
+    button, input { font: inherit; }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: auto; }
+    header {
+      border-bottom: 1px solid rgba(130,160,195,.16);
+      background: rgba(8,17,31,.82);
+      backdrop-filter: blur(14px);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar {
+      min-height: 72px; display: flex; align-items: center;
+      justify-content: space-between; gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      width: 40px; height: 40px; display: grid; place-items: center;
+      border: 1px solid rgba(88,166,255,.45); border-radius: 12px;
+      color: var(--cyan); background: linear-gradient(145deg, #16395a, #102139);
+      font-size: 20px; box-shadow: 0 0 28px rgba(57,153,220,.13);
+    }
+    .brand-name { font-weight: 800; letter-spacing: .08em; font-size: 13px; }
+    .brand-sub { color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .top-status {
+      display: inline-flex; align-items: center; gap: 8px; color: var(--muted);
+      font-size: 12px; white-space: nowrap;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
+    .hero { padding: 58px 0 34px; }
+    .eyebrow {
+      color: var(--cyan); text-transform: uppercase; letter-spacing: .19em;
+      font-size: 11px; font-weight: 800;
+    }
+    h1 { margin: 12px 0 12px; font-size: clamp(34px, 6vw, 58px); line-height: 1.05; letter-spacing: -.045em; }
+    h1 span { color: var(--blue); }
+    .hero p { max-width: 720px; margin: 0; color: var(--muted); font-size: 16px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .chip {
+      border: 1px solid var(--border); border-radius: 999px; padding: 6px 11px;
+      color: #c3d2e4; background: rgba(16,29,48,.7); font-size: 12px;
+    }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+      margin: 8px 0 30px;
+    }
+    .stat {
+      padding: 18px; border: 1px solid var(--border); border-radius: 15px;
+      background: linear-gradient(145deg, rgba(20,36,58,.96), rgba(13,26,43,.96));
+      box-shadow: var(--shadow);
+    }
+    .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+    .stat-value { font-size: 25px; font-weight: 800; margin-top: 4px; }
+    .stat-note { color: var(--muted); font-size: 11px; }
+    .workspace {
+      border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+      background: rgba(13,25,42,.92); box-shadow: var(--shadow); margin-bottom: 60px;
+    }
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 17px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab {
+      border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px;
+      background: #0d192a; color: var(--muted); cursor: pointer; font-weight: 700;
+    }
+    .tab[aria-selected="true"] {
+      color: white; border-color: rgba(88,166,255,.65);
+      background: rgba(45,113,177,.22);
+    }
+    .search-wrap { flex: 1; min-width: 210px; max-width: 360px; }
+    .search {
+      width: 100%; padding: 10px 13px; border-radius: 10px;
+      border: 1px solid var(--border); color: var(--text); background: #091525; outline: none;
+    }
+    .search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(88,166,255,.12); }
+    .content { padding: clamp(18px, 4vw, 34px); min-height: 300px; }
+    .section-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom: 22px; }
+    .section-heading h2 { margin:0; font-size: 22px; }
+    .section-heading p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .count { color:var(--muted); font-size:12px; white-space:nowrap; }
+    .report {
+      border: 1px solid var(--border); border-radius: 14px; background: rgba(16,29,48,.78);
+      padding: 22px; margin: 0 0 16px; overflow-wrap: anywhere;
+    }
+    .report h1, .report h2, .report h3, .report h4 { letter-spacing: -.02em; line-height:1.3; }
+    .report h1 { font-size:25px; margin:0 0 15px; }
+    .report h2 { font-size:20px; margin:22px 0 10px; color:#dcecff; }
+    .report h3 { font-size:16px; margin:18px 0 8px; color:#b9dcff; }
+    .report p, .report li { color:#c4d1e0; }
+    .report strong { color:#f2f7ff; }
+    .report code {
+      background:#071321; border:1px solid #263a53; border-radius:5px;
+      padding:2px 5px; color:#8ce2dc; font-size:.9em;
+    }
+    .report pre { overflow:auto; padding:14px; background:#071321; border-radius:9px; }
+    .report pre code { border:0; padding:0; }
+    .report blockquote { margin:14px 0; padding:3px 15px; border-left:3px solid var(--blue); color:var(--muted); }
+    .report table { width:100%; border-collapse:collapse; display:block; overflow-x:auto; }
+    .report th, .report td { border:1px solid var(--border); padding:9px 11px; text-align:left; }
+    .report th { background:#172a42; color:#e8f0fa; }
+    .report hr { border:0; border-top:1px solid var(--border); margin:24px 0; }
+    .report img { max-width:100%; border-radius:8px; }
+    .report a { text-decoration:none; }
+    .report a:hover { text-decoration:underline; }
+    .empty, .loading, .error {
+      border:1px dashed var(--border); border-radius:13px; padding:28px;
+      text-align:center; color:var(--muted); background:rgba(9,21,37,.55);
+    }
+    .error { color:#ffb2b2; border-color:rgba(255,119,119,.4); }
+    .refresh {
+      color:#d9eaff; border:1px solid var(--border); background:#13243a;
+      padding:9px 12px; border-radius:9px; cursor:pointer;
+    }
+    .refresh:hover { border-color:var(--blue); }
+    footer { border-top:1px solid rgba(130,160,195,.16); padding:24px 0 34px; color:var(--muted); font-size:12px; }
+    .footer-inner { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+    .hidden { display:none !important; }
+
+    @media (max-width: 700px) {
+      .top-status { display:none; }
+      .hero { padding-top:38px; }
+      .stats { grid-template-columns:1fr; }
+      .toolbar { align-items:stretch; }
+      .search-wrap { max-width:none; }
+      .section-heading { align-items:start; flex-direction:column; }
+      .report { padding:16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">⌁</div>
+        <div>
+          <div class="brand-name">CYBERLIFE <span style="color:#58a6ff">/</span> CTI</div>
+          <div class="brand-sub">Threat intelligence portal</div>
+        </div>
+      </div>
+      <div class="top-status"><span class="dot"></span><span id="connectionStatus">Conectando con los informes…</span></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Cyber Threat Intelligence</div>
+      <h1>Inteligencia que<br><span>anticipa amenazas.</span></h1>
+      <p>
+        Centro de consulta de vulnerabilidades, explotación activa y amenazas emergentes.
+        Informes documentados con foco en análisis defensivo y operaciones SOC.
+      </p>
+      <div class="hero-meta">
+        <span class="chip">Vulnerabilidades &amp; CVE</span>
+        <span class="chip">Threat Intelligence</span>
+        <span class="chip">SOC L1</span>
+        <span class="chip">Fuentes verificables</span>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Estado de los informes">
+      <div class="stat">
+        <div class="stat-label">Informes diarios</div>
+        <div class="stat-value" id="dailyCount">—</div>
+        <div class="stat-note">Entradas detectadas en el historial</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Informes semanales</div>
+        <div class="stat-value" id="weeklyCount">—</div>
+        <div class="stat-note">Resúmenes disponibles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Última actualización</div>
+        <div class="stat-value" id="lastUpdated" style="font-size:18px">—</div>
+        <div class="stat-note">Según los archivos publicados</div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="Tipo de informe">
+          <button class="tab" id="dailyTab" role="tab" aria-selected="true" aria-controls="reportContent" data-report="daily">Informes diarios</button>
+          <button class="tab" id="weeklyTab" role="tab" aria-selected="false" aria-controls="reportContent" data-report="weekly">Informes semanales</button>
+        </div>
+        <div class="search-wrap">
+          <input class="search" id="searchInput" type="search" placeholder="Buscar CVE, producto, amenaza…" aria-label="Buscar en los informes">
+        </div>
+        <button class="refresh" id="refreshButton" type="button">↻ Actualizar</button>
+      </div>
+
+      <div class="content" id="reportContent" role="tabpanel" aria-live="polite">
+        <div class="loading">Cargando informes publicados…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>CyberLife · Cyber Threat Intelligence</span>
+      <span>Información para fines educativos y defensivos. Verifica siempre las fuentes originales.</span>
+    </div>
+  </footer>
+
+  <script>
+    const REPORTS = {
+      daily: { file: "INFORMES_DIARIOS.md", title: "Informes diarios", description: "Hallazgos y vulnerabilidades documentados día a día." },
+      weekly: { file: "INFORMES_SEMANALES.md", title: "Informes semanales", description: "Resumen consolidado de amenazas y vulnerabilidades de cada semana." }
+    };
+
+    let currentReport = "daily";
+    let reportText = { daily: "", weekly: "" };
+
+    const content = document.getElementById("reportContent");
+    const searchInput = document.getElementById("searchInput");
+
+    function safeMarkdown(markdown) {
+      if (!window.marked || !window.DOMPurify) {
+        return "<pre></pre>";
+      }
+      const raw = window.marked.parse(markdown || "", { breaks: true, gfm: true });
+      return window.DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+    }
+
+    function splitReports(markdown) {
+      const text = (markdown || "").trim();
+      if (!text) return [];
+      // Cada informe del agregado empieza con un encabezado H1 ("# Informe CTI ...").
+      // Se corta antes de cada H1 al inicio de línea; los "---" internos de cada
+      // informe se mantienen intactos dentro de su tarjeta.
+      const parts = text.split(/\n(?=#\s)/).map(part => part.trim()).filter(Boolean);
+      return parts.length ? parts : [text];
+    }
+
+    function getHeading(part) {
+      const match = part.match(/^#{1,3}\s+(.+)$/m);
+      return match ? match[1].replace(/[*_`]/g, "").trim() : "Informe";
+    }
+
+    function countEntries(markdown) {
+      return splitReports(markdown).length;
+    }
+
+    function extractDate(text) {
+      const match = text.match(/\b(20\d{2}[-/]\d{2}[-/]\d{2}|\d{1,2}[/-]\d{1,2}[/-]20\d{2})\b/);
+      return match ? match[0] : "";
+    }
+
+    function renderCurrent() {
+      const cfg = REPORTS[currentReport];
+      const all = splitReports(reportText[currentReport]);
+      const query = searchInput.value.trim().toLocaleLowerCase("es");
+      const filtered = all.filter(part => !query || part.toLocaleLowerCase("es").includes(query));
+
+      const cards = filtered.map((part, index) => {
+        const heading = getHeading(part);
+        const date = extractDate(heading) || extractDate(part);
+        return `<article class="report">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
+            <div style="color:#55d6d0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase">${currentReport === "daily" ? "INFORME DIARIO" : "RESUMEN SEMANAL"}</div>
+            ${date ? `<div style="color:#9aacc2;font-size:12px">${escapeHtml(date)}</div>` : ""}
+          </div>
+          ${safeMarkdown(part)}
+        </article>`;
+      }).join("");
+
+      content.innerHTML = `
+        <div class="section-heading">
+          <div><h2>${cfg.title}</h2><p>${cfg.description}</p></div>
+          <div class="count">${filtered.length} de ${all.length} informes</div>
+        </div>
+        ${filtered.length ? cards : `<div class="empty">${all.length ? "No hay informes que coincidan con la búsqueda." : `Todavía no hay contenido en <strong>${cfg.file}</strong>. Cuando el agente publique el primer informe, aparecerá aquí automáticamente.`}</div>`}
+      `;
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[char]);
+    }
+
+    async function loadReport(key) {
+      const cfg = REPORTS[key];
+      try {
+        const response = await fetch(`${cfg.file}?v=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) {
+          if (response.status === 404) {
+            reportText[key] = "";
+            return;
+          }
+          throw new Error(`HTTP ${response.status}`);
+        }
+        reportText[key] = await response.text();
+      } catch (error) {
+        throw new Error(`${cfg.file}: ${error.message}`);
+      }
+    }
+
+    async function refreshReports() {
+      content.innerHTML = '<div class="loading">Actualizando informes…</div>';
+      document.getElementById("connectionStatus").textContent = "Actualizando…";
+      try {
+        const results = await Promise.allSettled([loadReport("daily"), loadReport("weekly")]);
+        const failures = results.filter(result => result.status === "rejected");
+        document.getElementById("dailyCount").textContent = countEntries(reportText.daily);
+        document.getElementById("weeklyCount").textContent = countEntries(reportText.weekly);
+
+        const dates = [extractDate(reportText.daily), extractDate(reportText.weekly)].filter(Boolean);
+        document.getElementById("lastUpdated").textContent = dates[0] || "Sin datos";
+        document.getElementById("connectionStatus").textContent = failures.length ? "Conexión parcial" : "Informes sincronizados";
+
+        if (failures.length === 2) {
+          content.innerHTML = `<div class="error">No se pudieron cargar los archivos Markdown. Comprueba que INFORMES_DIARIOS.md e INFORMES_SEMANALES.md estén publicados junto a index.html en la rama configurada para GitHub Pages.</div>`;
+          return;
+        }
+        renderCurrent();
+      } catch (error) {
+        document.getElementById("connectionStatus").textContent = "Error de conexión";
+        content.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        currentReport = button.dataset.report;
+        document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+        renderCurrent();
+      });
+    });
+
+    searchInput.addEventListener("input", renderCurrent);
+    document.getElementById("refreshButton").addEventListener("click", refreshReports);
+
+    refreshReports();
+  </script>
+</body>
+</html>
