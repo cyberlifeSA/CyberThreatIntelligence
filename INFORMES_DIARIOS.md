@@ -1,3 +1,119 @@
+# Informe CTI Diario — 2026-11-14
+
+**Fecha del informe:** 15/11/2026  **Cobertura:** novedades del sábado 14 de noviembre de 2026 (zona horaria America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs y fabricantes oficiales.
+
+---
+
+## 1. Resumen ejecutivo
+
+- **Sin nuevas adiciones al catálogo KEV de CISA el 14/11**: la última actualización sigue siendo la del 13/11 (CVE-2026-114713 UnrealIRCd y CVE-2026-123039 Check Point Gaia), con vencimiento federal el 16/11. No se detectó explotación confirmada nueva ese día.
+- **Los CVEs ya informados (Check Point Gaia, UnrealIRCd, PHP2Shell, Outlook CVE-2026-124194) siguen siendo la prioridad 1**: el seguimiento de la cadena Check Point (wiper `destroy_v6`, webshells TSGA/TSProxy, movimiento a ESXi) continúa vigente; no hubo cambios en el estado de explotación.
+- **NVD publicó ~20 CVEs nuevos el 14/11**, todos sin confirmación de explotación masiva. Los más relevantes por severidad: TRENDnet TEW-657BRM (EOL, out-of-bounds write remoto), Shipo WordPress (bypass de autenticación), Dokploy (inyección de comandos OS como root), Fluent Forms (arbitrary file write → RCE) y AutomatorWP Pro (bypass de autorización → takeover de cuenta).
+- **Vigilancia ICS pendiente**: los avisos CISA ICSA-26-316-01/02/03 (Siemens, Node.js/PHP2Shell) siguen sin análisis detallado; se mantienen en cola.
+- **Recomendación SOC L1**: mantener el foco en Check Point/UnrealIRCd (parcheo antes del 16/11) y tratar los CVEs nuevos del 14/11 como inventario/parcheo rutinario hasta que haya evidencia de explotación.
+
+---
+
+## 2. Novedades del 14/11 sin explotación confirmada (vigilancia)
+
+| CVE | CVSS | Producto | Impacto | Notas |
+|---|---|---|---|---|
+| CVE-2026-129351 | Crítica | TRENDnet TEW-657BRM (mini_httpd) | Out-of-bounds write remoto, sin autenticación | Producto EOL; fabricante no confirma la vulnerabilidad |
+| CVE-2026-19907 | Crítica | Plugin WordPress "Shipo" | Bypass de autenticación → impersonación de admin vía REST API | Sin explotación confirmada |
+| CVE-2026-129433 | Crítica | Dokploy | Inyección de comandos OS como root vía backup (nombre de servicio) | Requiere usuario autenticado |
+| CVE-2026-120522 | Crítica | Plugin WordPress "Fluent Forms" (cloud storage) | Arbitrary file write → RCE potencial | Endpoints REST expuestos |
+| CVE-2026-126173 | Crítica | Plugin WordPress "AutomatorWP Pro" (webhook addon) | Bypass de autorización → reset de contraseña de cualquier usuario | Requiere configuración específica de webhooks |
+
+Ninguno figura en el KEV ni tiene PoC pública confirmada a la fecha de consulta.
+
+---
+
+## 3. Contexto de seguimiento (sin cambios respecto al 13/11)
+
+- **CVE-2026-123039 (Check Point Gaia)** y **CVE-2026-114713 (UnrealIRCd)**: siguen en KEV con vencimiento federal 16/11. Sin novedades de explotación adicionales reportadas el 14/11.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak)**: sin cambios; controles de bloqueo NTLM saliente siguen vigentes.
+- **PHP2Shell (CVE-2026-109618/109619)**: sin cambios; explotación activa confirmada también contra interfaces de gestión PAN-OS.
+
+---
+
+## 4. Recomendaciones SOC L1
+
+1. **Mantener prioridad 1**: parcheo de Check Point Gaia (Jumbo Hotfix por take) y UnrealIRCd (6.2.7.1 o hot-patch) antes del 16/11.
+2. **Inventario rutinario** de los CVEs nuevos del 14/11 (TRENDnet EOL, plugins WP, Dokploy) y parcheo según disponibilidad del fabricante; TRENDnet EOL implica plan de reemplazo.
+3. **Seguir cazando** indicadores de la cadena Check Point (webshells TSGA/TSProxy, `destroy_v6`, movimiento SSH a ESXi, `/tmp/dynamic_socket` con permisos incorrectos).
+4. **Completar análisis** de los avisos ICS pendientes (ICSA-26-316-01/02/03) en la próxima corrida.
+
+---
+
+## 5. Cobertura y limitaciones
+
+- No se detectaron nuevas adiciones al KEV ni alertas CISA el 14/11; la cobertura se centró en NVD (publicaciones del día) y seguimiento de hallazgos previos.
+- EPSS y estados de explotación corresponden a las fuentes citadas a la fecha de consulta (15/11/2026).
+
+```json
+{"fecha":"2026-11-14","cves":[{"id":"CVE-2026-129351","producto":"TRENDnet TEW-657BRM (mini_httpd)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Producto EOL; fabricante no confirma la vulnerabilidad; planificar reemplazo.","runbook":"1) Identificar dispositivos TEW-657BRM expuestos. 2) Aislar de Internet. 3) Planificar reemplazo por falta de soporte. 4) Monitorear trafico anormal hacia el dispositivo."},{"id":"CVE-2026-19907","producto":"Plugin WordPress Shipo","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar o desactivar el plugin; revisar configuracion de cookies de autenticacion.","runbook":"1) Inventariar sitios WordPress con el plugin Shipo. 2) Actualizar o desactivar. 3) Revisar cuentas de administrador creadas recientemente. 4) Auditar logs REST API."},{"id":"CVE-2026-129433","producto":"Dokploy","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar Dokploy segun aviso del fabricante.","runbook":"1) Identificar instancias Dokploy. 2) Parchear. 3) Revisar operaciones de backup y nombres de servicio. 4) Auditar comandos ejecutados como root."},{"id":"CVE-2026-120522","producto":"Plugin WordPress Fluent Forms (cloud storage)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar el plugin o desactivar la integracion de almacenamiento en la nube.","runbook":"1) Inventariar sitios con Fluent Forms. 2) Actualizar o desactivar. 3) Buscar archivos PHP subidos en directorios web. 4) Revisar endpoints REST expuestos."},{"id":"CVE-2026-126173","producto":"Plugin WordPress AutomatorWP Pro (webhook addon)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar el plugin; revisar configuracion de webhooks.","runbook":"1) Inventariar sitios con AutomatorWP Pro. 2) Actualizar. 3) Revisar configuraciones de webhooks. 4) Auditar resets de contrasena recientes."}],"otras_amenazas":[]}
+```
+
+
+
+# Informe CTI Diario — 2026-11-14
+
+**Fecha del informe:** 15/11/2026  **Cobertura:** novedades del sábado 14 de noviembre de 2026 (zona horaria America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs y fabricantes oficiales.
+
+---
+
+## 1. Resumen ejecutivo
+
+- **Sin nuevas adiciones al catálogo KEV de CISA el 14/11**: la última actualización sigue siendo la del 13/11 (CVE-2026-114713 UnrealIRCd y CVE-2026-123039 Check Point Gaia), con vencimiento federal el 16/11. No se detectó explotación confirmada nueva ese día.
+- **Los CVEs ya informados (Check Point Gaia, UnrealIRCd, PHP2Shell, Outlook CVE-2026-124194) siguen siendo la prioridad 1**: el seguimiento de la cadena Check Point (wiper `destroy_v6`, webshells TSGA/TSProxy, movimiento a ESXi) continúa vigente; no hubo cambios en el estado de explotación.
+- **NVD publicó ~20 CVEs nuevos el 14/11**, todos sin confirmación de explotación masiva. Los más relevantes por severidad: TRENDnet TEW-657BRM (EOL, out-of-bounds write remoto), Shipo WordPress (bypass de autenticación), Dokploy (inyección de comandos OS como root), Fluent Forms (arbitrary file write → RCE) y AutomatorWP Pro (bypass de autorización → takeover de cuenta).
+- **Vigilancia ICS pendiente**: los avisos CISA ICSA-26-316-01/02/03 (Siemens, Node.js/PHP2Shell) siguen sin análisis detallado; se mantienen en cola.
+- **Recomendación SOC L1**: mantener el foco en Check Point/UnrealIRCd (parcheo antes del 16/11) y tratar los CVEs nuevos del 14/11 como inventario/parcheo rutinario hasta que haya evidencia de explotación.
+
+---
+
+## 2. Novedades del 14/11 sin explotación confirmada (vigilancia)
+
+| CVE | CVSS | Producto | Impacto | Notas |
+|---|---|---|---|---|
+| CVE-2026-129351 | Crítica | TRENDnet TEW-657BRM (mini_httpd) | Out-of-bounds write remoto, sin autenticación | Producto EOL; fabricante no confirma la vulnerabilidad |
+| CVE-2026-19907 | Crítica | Plugin WordPress "Shipo" | Bypass de autenticación → impersonación de admin vía REST API | Sin explotación confirmada |
+| CVE-2026-129433 | Crítica | Dokploy | Inyección de comandos OS como root vía backup (nombre de servicio) | Requiere usuario autenticado |
+| CVE-2026-120522 | Crítica | Plugin WordPress "Fluent Forms" (cloud storage) | Arbitrary file write → RCE potencial | Endpoints REST expuestos |
+| CVE-2026-126173 | Crítica | Plugin WordPress "AutomatorWP Pro" (webhook addon) | Bypass de autorización → reset de contraseña de cualquier usuario | Requiere configuración específica de webhooks |
+
+Ninguno figura en el KEV ni tiene PoC pública confirmada a la fecha de consulta.
+
+---
+
+## 3. Contexto de seguimiento (sin cambios respecto al 13/11)
+
+- **CVE-2026-123039 (Check Point Gaia)** y **CVE-2026-114713 (UnrealIRCd)**: siguen en KEV con vencimiento federal 16/11. Sin novedades de explotación adicionales reportadas el 14/11.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak)**: sin cambios; controles de bloqueo NTLM saliente siguen vigentes.
+- **PHP2Shell (CVE-2026-109618/109619)**: sin cambios; explotación activa confirmada también contra interfaces de gestión PAN-OS.
+
+---
+
+## 4. Recomendaciones SOC L1
+
+1. **Mantener prioridad 1**: parcheo de Check Point Gaia (Jumbo Hotfix por take) y UnrealIRCd (6.2.7.1 o hot-patch) antes del 16/11.
+2. **Inventario rutinario** de los CVEs nuevos del 14/11 (TRENDnet EOL, plugins WP, Dokploy) y parcheo según disponibilidad del fabricante; TRENDnet EOL implica plan de reemplazo.
+3. **Seguir cazando** indicadores de la cadena Check Point (webshells TSGA/TSProxy, `destroy_v6`, movimiento SSH a ESXi, `/tmp/dynamic_socket` con permisos incorrectos).
+4. **Completar análisis** de los avisos ICS pendientes (ICSA-26-316-01/02/03) en la próxima corrida.
+
+---
+
+## 5. Cobertura y limitaciones
+
+- No se detectaron nuevas adiciones al KEV ni alertas CISA el 14/11; la cobertura se centró en NVD (publicaciones del día) y seguimiento de hallazgos previos.
+- EPSS y estados de explotación corresponden a las fuentes citadas a la fecha de consulta (15/11/2026).
+
+```json
+{"fecha":"2026-11-14","cves":[{"id":"CVE-2026-129351","producto":"TRENDnet TEW-657BRM (mini_httpd)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Producto EOL; fabricante no confirma la vulnerabilidad; planificar reemplazo.","runbook":"1) Identificar dispositivos TEW-657BRM expuestos. 2) Aislar de Internet. 3) Planificar reemplazo por falta de soporte. 4) Monitorear trafico anormal hacia el dispositivo."},{"id":"CVE-2026-19907","producto":"Plugin WordPress Shipo","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar o desactivar el plugin; revisar configuracion de cookies de autenticacion.","runbook":"1) Inventariar sitios WordPress con el plugin Shipo. 2) Actualizar o desactivar. 3) Revisar cuentas de administrador creadas recientemente. 4) Auditar logs REST API."},{"id":"CVE-2026-129433","producto":"Dokploy","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar Dokploy segun aviso del fabricante.","runbook":"1) Identificar instancias Dokploy. 2) Parchear. 3) Revisar operaciones de backup y nombres de servicio. 4) Auditar comandos ejecutados como root."},{"id":"CVE-2026-120522","producto":"Plugin WordPress Fluent Forms (cloud storage)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar el plugin o desactivar la integracion de almacenamiento en la nube.","runbook":"1) Inventariar sitios con Fluent Forms. 2) Actualizar o desactivar. 3) Buscar archivos PHP subidos en directorios web. 4) Revisar endpoints REST expuestos."},{"id":"CVE-2026-126173","producto":"Plugin WordPress AutomatorWP Pro (webhook addon)","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar el plugin; revisar configuracion de webhooks.","runbook":"1) Inventariar sitios con AutomatorWP Pro. 2) Actualizar. 3) Revisar configuraciones de webhooks. 4) Auditar resets de contrasena recientes."}],"otras_amenazas":[]}
+```
+
 # Informe CTI Diario — 2026-11-13
 
 **Fecha del informe:** 14/11/2026 · **Cobertura:** novedades del viernes 13 de noviembre de 2026 (zona horaria America/Santiago)
