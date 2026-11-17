@@ -1,4 +1,140 @@
-# 📋 Informe CTI Diario — 2026-11-15
+# 📋 Informe CTI Diario — 2026-11-16
+
+**Fecha del informe:** 17/11/2026  **Cobertura:** novedades del domingo 16 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> 💡 **Resumen en 30 segundos:** Sin nuevas adiciones oficiales al KEV el 16/11 (última: 13/11). Hoy venció la fecha federal para Check Point Gaia y UnrealIRCd: verificar parcheo antes de cerrar el turno. NVD publicó ~200 CVEs en 30 h, 32 de score ≥8.5; destacan Dassault 3DEXPERIENCE (CVSS 10), D-Link DSL-6740C (10, creds hard-coded, PoC público), DrayTek Vigor2960 (9.9, fix 1.5.1.7), ConnectWise ScreenConnect (9.9, marcado KEV por terceros) y Apache Axis 1.x/N-able (9.8, explotado). Prioridad: confirmar que Gaia/UnrealIRCd quedaron parcheados; si no, asumir compromiso y cazar IOCs.
+
+---
+
+## 1. Turno de vigilancia — qué atender primero
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 — Check Point Gaia / UnrealIRCd | Vencimiento federal **16/11**. Verificar parche aplicado; si no, asumir compromiso y cazar IOCs (webshells TSGA/TSProxy, `/tmp/dynamic_socket`, `destroy_v6`). |
+| 2 | 🔴 P2 — ConnectWise ScreenConnect (CVE-2026-84869, 9.9) | Reportado como KEV el 16/11 por fuentes de terceros. Verificar versión del servidor y parchear de inmediato. |
+| 3 | 🔴 P3 — D-Link DSL-6740C (CVE-2026-129444, 10.0) | Creds hard-coded en FTP, PoC público, producto EOL. Aislar del Internet o reemplazar. |
+| 4 | 🟠 P4 — DrayTek Vigor2960 (CVE-2026-129449, 9.9) | Heap overflow con PoC público; actualizar a 1.5.1.7. |
+| 5 | 🟠 P5 — N-able N-central / Apache Axis 1.x (CVE-2026-90436, 9.8) | Explotación confirmada. Aplicar HF3 (2026.4.1.39) y actualizar agentes/probes. |
+| 6 | 🟡 General | Dassault 3DEXPERIENCE (CVE-2026-93664, 10.0) y Prime CMS/WordPress OTP (9.8): inventario y parcheo rutinario. |
+
+> ℹ️ **Sin nuevas adiciones oficiales al KEV el 16/11.** Catálogo estable en versión 2026.11.13 (últimas adiciones 13/11). Reportes de terceros (Tuskira) marcan CVE-2026-84869 (ConnectWise ScreenConnect) y CVE-2026-111560 (Barracuda) como KEV con fecha 16/11; verificar en el catálogo CISA antes de tratarlos como obligatorios.
+
+---
+
+## 2. Recomendaciones SOC L1 y Recomendaciones SOC L2
+
+### Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 — Check Point/UnrealIRCd:** confirmar estado de parche en gateways Gaia y servidores IRC tras el vencimiento federal del 16/11; si no parcheados, asumir compromiso y cazar IOCs (webshells TSGA/TSProxy, `/tmp/dynamic_socket`, `destroy_v6`, movimiento SSH a ESXi).
+2. 🔴 **Prioridad 2 — ConnectWise ScreenConnect:** inventariar servidores ScreenConnect; aplicar la versión parcheada; revisar logs de acceso remoto y sesiones no autorizadas.
+3. 🔴 **Prioridad 3 — D-Link DSL-6740C:** aislar del Internet o reemplazar (EOL, sin parche); bloquear FTP (puerto 21) en perímetro.
+4. 🟠 **Prioridad 4 — DrayTek Vigor2960:** actualizar a 1.5.1.7; monitorear requests a `mainfunction.cgi` / `check_file_exist`.
+5. 🟠 **Prioridad 5 — N-able N-central:** aplicar HF3 (2026.4.1.39), actualizar agentes y probes; revisar uso de Legacy API.
+6. 🟡 **General:** inventariar 3DEXPERIENCE (Station Launcher), WordPress (OTP plugin) y Prime CMS; aplicar parches cuando el fabricante los publique.
+
+### Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** deshabilitar FTP en dispositivos EOL; restringir ScreenConnect a segmentos confiables; revisar configuración de Schannel/TLS en listeners.
+2. 🟠 **Threat hunting:** buscar actividad de wfx-loot en repositorios GitHub (campaña reportada); revisar logs de NetScaler/Citrix (KEV pendientes); cazar IOCs de ScreenConnect (sesiones anómalas, nuevos usuarios admin).
+3. 🟡 **Tuning de detecciones:** añadir reglas Sigma para webshells PHP (TSGA/TSProxy), comandos DynamicCLI sin wrapper Clish, y requests a `mainfunction.cgi` / `check_file_exist` en DrayTek.
+4. 🟡 **Automatización:** integrar EPSS en el pipeline de priorización; exportar catálogo CVE a SIEM para correlación con inventario de activos.
+5. 🟢 **Mejoras de proceso:** definir SLA interno de parcheo alineado a fechas KEV (BOD 26-04); documentar estado de remediación por CVE; verificar parcheo post-deadline federal.
+
+---
+
+## 3. Resumen ejecutivo
+
+- **Deadline federal 16/11 para Check Point Gaia y UnrealIRCd:** verificar hoy que ambos quedaron parcheados; si no, asumir compromiso y cazar IOCs.
+- **KEV sin cambios oficiales el 16/11:** catálogo estable en 2026.11.13. Reportes de terceros marcan ConnectWise ScreenConnect (CVE-2026-84869) y Barracuda (CVE-2026-111560) como KEV con fecha 16/11; verificar en CISA.
+- **NVD publicó ~200 CVEs en 30 h:** 32 de score ≥8.5. Destacan Dassault 3DEXPERIENCE (10.0, deserialización), D-Link DSL-6740C (10.0, creds hard-coded, PoC público) y DrayTek Vigor2960 (9.9, heap overflow, PoC público).
+- **Explotación confirmada:** Apache Axis 1.x / N-able N-central (CVE-2026-90436, 9.8) con fix en HF3; ConnectWise ScreenConnect (9.9) marcado KEV por terceros.
+- **Dispositivos EOL críticos:** D-Link DSL-6740C sin parche confirmado; planificar reemplazo o segmentación urgente.
+
+---
+
+## 4. Novedades del 16/11
+
+### 4.1 KEV / explotación confirmada
+
+| CVE | CVSS | Producto | Impacto | EPSS |
+|---|---|---|---|---|
+| 🔴 CVE-2026-84869 | 9.9 | ConnectWise ScreenConnect | RCE sin autenticación (marcado KEV por terceros el 16/11) | — |
+| 🔴 CVE-2026-90436 | 9.8 | Apache Axis 1.x / N-able N-central | RCE sin autenticación, explotado en la calle | — |
+| 🟠 CVE-2026-111560 | 7.2 | Barracuda (OS command injection) | KEV (reportado por terceros) | — |
+
+> ℹ️ Verificar en el catálogo CISA antes de tratar ScreenConnect/Barracuda como KEV obligatorio. Check Point Gaia (CVE-2026-123039) y UnrealIRCd (CVE-2026-114713) siguen en KEV con vencimiento cumplido el 16/11.
+
+### 4.2 CVEs críticos publicados el 16/11 (sin KEV confirmado)
+
+| CVE | CVSS | Producto | Impacto |
+|---|---|---|---|
+| 🔴 CVE-2026-93664 | 10.0 | Dassault Systèmes 3DEXPERIENCE (Station Launcher App) | Deserialización no confiable → RCE sin autenticación |
+| 🔴 CVE-2026-129444 | 10.0 | D-Link DSL-6740C | Creds hard-coded en FTP, PoC público, producto EOL |
+| 🔴 CVE-2026-129449 | 9.9 | DrayTek Vigor2960 | Heap overflow en mainfunction.cgi, PoC público, fix 1.5.1.7 |
+| 🔴 CVE-2026-8760 | 9.8 | Plugin WordPress OTP | Authentication bypass |
+| 🔴 CVE-2026-129941 | 9.8 | Prime CMS | Authentication bypass |
+| 🟠 CVE-2026-8775 | 8.8 | Edimax BR-6428NS | Buffer overflow |
+| 🟠 CVE-2026-110697 | 9.9 | Red Hat Quay | Robo de robot tokens (self-hosted) |
+
+### 4.3 Hallazgos por CVE (detalle)
+
+**CVE-2026-93664 — Dassault Systèmes 3DEXPERIENCE (Station Launcher App)**
+- **CVSS:** 10.0 (Crítica) — **CWE-502** (deserialización de datos no confiables).
+- **Producto afectado:** Station Launcher App en plataforma 3DEXPERIENCE (versiones no especificadas por el fabricante).
+- **Explotación:** sin explotación confirmada a la fecha; sin PoC público.
+- **Mitigación:** consultar al fabricante/IT provider la versión instalada y disponibilidad de fix; no hay versión parcheada confirmada.
+
+**CVE-2026-129444 — D-Link DSL-6740C**
+- **CVSS:** 10.0 (Crítica) — **CWE-798 / CWE-259** (credenciales hard-coded).
+- **Producto afectado:** D-Link DSL-6740C firmware 20131126 (EOL).
+- **Explotación:** PoC público disponible; sin explotación en KEV confirmada.
+- **Mitigación:** no hay firmware parcheado confirmado; aislar FTP (puerto 21) del Internet o reemplazar el dispositivo.
+
+**CVE-2026-129449 — DrayTek Vigor2960**
+- **CVSS:** 9.9 (Crítica) — heap-based buffer overflow en `check_file_exist` de `mainfunction.cgi`.
+- **Producto afectado:** DrayTek Vigor2960 1.5.1.6 (y versiones anteriores).
+- **Explotación:** PoC público disponible; sin explotación en KEV confirmada.
+- **Mitigación:** actualizar a 1.5.1.7; monitorear requests a `mainfunction.cgi`.
+
+**CVE-2026-84869 — ConnectWise ScreenConnect**
+- **CVSS:** 9.9 (Crítica).
+- **Producto afectado:** ConnectWise ScreenConnect (technician client / servidor de acceso remoto).
+- **Explotación:** marcado como KEV por fuentes de terceros (Tuskira) con fecha 16/11; verificar en CISA.
+- **Mitigación:** aplicar la versión parcheada del fabricante; revisar sesiones remotas y cuentas admin.
+
+**CVE-2026-90436 — Apache Axis 1.x / N-able N-central**
+- **CVSS:** 9.8 (Crítica) — Apache Axis 1.x EOL, incluido embebido en otras apps Java.
+- **Producto afectado:** N-able N-central (on-prem y hosted), Apache Axis 1.x.
+- **Explotación:** explotación confirmada (Rapid7).
+- **Mitigación:** aplicar HF3 (2026.4.1.39) que bloquea la Legacy API; actualizar todos los agentes y probes.
+
+---
+
+## 5. Contexto de seguimiento (sin cambios respecto al 15/11)
+
+- **CVE-2026-123039 (Check Point Gaia)** y **CVE-2026-114713 (UnrealIRCd):** vencimiento federal cumplido el 16/11. Sin novedades adicionales. Un gateway/servidor sin parchear debe asumirse comprometido.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak):** sin cambios; controles de bloqueo NTLM saliente vigentes.
+- **PHP2Shell (CVE-2026-109618/109619):** explotación activa contra portales Mobile Access y PAN-OS; sin novedades el 16/11.
+- **Siemens Desigo / Node2Shell (CVE-2026-111497):** advisory ICSA-26-316-02 del 12/11, pendiente de análisis detallado.
+
+---
+
+## 6. Cobertura y limitaciones
+
+- No se detectaron nuevas adiciones oficiales al KEV el 16/11; cobertura centrada en NVD (~200 CVEs en 30 h) y seguimiento de hallazgos previos.
+- ScreenConnect (CVE-2026-84869) y Barracuda (CVE-2026-111560) figuran como KEV solo en fuentes de terceros (Tuskira); verificar en catálogo CISA.
+- EPSS y estados de explotación corresponden a las fuentes citadas a la fecha de consulta (17/11/2026).
+
+```json
+{"fecha":"2026-11-16","cves":[{"id":"CVE-2026-93664","producto":"Dassault Systemes 3DEXPERIENCE Station Launcher App","cvss":10.0,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Sin version parcheada confirmada; consultar al fabricante.","runbook":"1) Identificar instancias 3DEXPERIENCE con Station Launcher. 2) Consultar al fabricante version y fix. 3) Restringir acceso al launcher. 4) Monitorear deserializacion anormal.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de deserializacion Java anormal en Station Launcher.","playbook":{"triage":["Verificar version instalada.","Revisar logs de deserializacion."],"contencion":["Restringir acceso al launcher.","Segmentar la plataforma."],"verificacion":["Confirmar version parcheada.","Validar ausencia de actividad anomala."]}},{"id":"CVE-2026-129444","producto":"D-Link DSL-6740C","cvss":10.0,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"PoC","parche":"Producto EOL; sin parche confirmado; aislar FTP o reemplazar.","runbook":"1) Inventariar dispositivos DSL-6740C expuestos. 2) Bloquear FTP (puerto 21) en perimetro. 3) Planificar reemplazo. 4) Monitorear trafico FTP.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de conexiones FTP a dispositivos D-Link DSL-6740C.","playbook":{"triage":["Identificar dispositivos expuestos.","Verificar firmware 20131126."],"contencion":["Bloquear FTP en firewall.","Aislar del Internet."],"verificacion":["Confirmar ausencia de trafico FTP externo.","Documentar plan de reemplazo."]}},{"id":"CVE-2026-129449","producto":"DrayTek Vigor2960","cvss":9.9,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"PoC","parche":"Actualizar a 1.5.1.7.","runbook":"1) Identificar instancias Vigor2960. 2) Actualizar a 1.5.1.7. 3) Monitorear requests a mainfunction.cgi. 4) Revisar logs de check_file_exist.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de requests HTTP a mainfunction.cgi con check_file_exist en DrayTek.","playbook":{"triage":["Verificar version instalada.","Revisar logs HTTP."],"contencion":["Aplicar parche 1.5.1.7.","Bloquear acceso externo a CGI."],"verificacion":["Confirmar version >= 1.5.1.7.","Validar ausencia de requests sospechosos."]}},{"id":"CVE-2026-84869","producto":"ConnectWise ScreenConnect","cvss":9.9,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV (reportado por terceros)","parche":"Aplicar version parcheada del fabricante.","runbook":"1) Inventariar servidores ScreenConnect. 2) Aplicar parche. 3) Revisar sesiones remotas y cuentas admin. 4) Monitorear accesos anormales.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de sesiones remotas anormales en ScreenConnect.","playbook":{"triage":["Verificar version del servidor.","Revisar cuentas admin."],"contencion":["Aplicar parche.","Restringir a segmentos confiables."],"verificacion":["Confirmar version parcheada.","Validar ausencia de sesiones no autorizadas."]}},{"id":"CVE-2026-90436","producto":"Apache Axis 1.x / N-able N-central","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"explotada en la calle","parche":"Aplicar HF3 (2026.4.1.39) y actualizar agentes/probes.","runbook":"1) Identificar instancias N-central. 2) Aplicar HF3. 3) Actualizar agentes y probes. 4) Deshabilitar Legacy API.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de uso de Legacy API en N-able N-central.","playbook":{"triage":["Verificar version de N-central.","Revisar uso de Legacy API."],"contencion":["Aplicar HF3.","Deshabilitar Legacy API."],"verificacion":["Confirmar HF3 aplicado.","Validar ausencia de explotacion."]}},{"id":"CVE-2026-8760","producto":"Plugin WordPress OTP","cvss":9.8,"severidad":"Critica","mitre":null,"explotacion":"sin explotacion confirmada","parche":"Actualizar o desactivar el plugin.","runbook":"1) Inventariar sitios WordPress con el plugin OTP. 2) Actualizar o desactivar. 3) Revisar cuentas creadas recientemente. 4) Auditar logs de autenticacion.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de bypass de autenticacion OTP en WordPress.","playbook":{"triage":["Identificar sitios afectados.","Verificar version del plugin."],"contencion":["Actualizar o desactivar.","Revisar cuentas admin."],"verificacion":["Confirmar version parcheada.","Validar ausencia de cuentas no autorizadas."]}}],"otras_amenazas":[{"nombre":"Check Point Gaia / UnrealIRCd (deadline federal 16/11)","tipo":"campana","resumen":"Vencimiento federal cumplido el 16/11; verificar parcheo y asumir compromiso si no parcheado."}]}
+```
+
+---
+
+# 📋 Informe CTI Diario — 2026-11-15", "oldString": "# 📋 Informe CTI Diario — 2026-11-15"}
 
 **Fecha del informe:** 16/11/2026  **Cobertura:** novedades del sábado 15 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
