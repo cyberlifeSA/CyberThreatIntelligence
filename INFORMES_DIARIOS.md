@@ -1,3 +1,105 @@
+# 📋 Informe CTI Diario — 2026-11-17
+
+**Fecha del informe:** 18/11/2026  **Cobertura:** novedades del lunes 17 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> 💡 **Resumen en 30 segundos:** CISA añadió un nuevo CVE al KEV el 17/11: CVE-2026-115731 (Perforce Puppet Enterprise, deserialización, CVSS 4.0 9.4), con fecha federal de remediación el 01/12. Explotación confirmada; parche disponible desde el 03/11 (PE 2026.0.1/2025.12.1/2023.8.13 y Puppet Core 9.1.3/8.22.2). Revisar autosigning de certificados y certificados emitidos. Sin otras adiciones al KEV ese día.
+
+---
+
+## 1. Turno de vigilancia — qué atender primero
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 — Perforce Puppet Enterprise (CVE-2026-115731, 9.4, KEV) | Parchear a PE 2026.0.1 / 2025.12.1 / 2023.8.13 (o Puppet Core 9.1.3/8.22.2) y reiniciar Puppet Server; revisar autosigning y certificados emitidos. Deadline federal 01/12. |
+| 2 | 🔴 P2 — Check Point Gaia / UnrealIRCd | Vencimiento federal 16/11 ya cumplido; si algún gateway/servidor sigue sin parchear, asumir compromiso y cazar IOCs. |
+| 3 | 🟠 P3 — Dispositivos EOL (D-Link, DrayTek) | CVEs críticos 9.9-10.0 sin parche confirmado; aislar o reemplazar. |
+| 4 | 🟡 General | NVD sin novedades críticas nuevas el 17/11; seguimiento de hallazgos previos. |
+
+> ℹ️ **CISA añadió 1 CVE al KEV el 17/11.** Catálogo ahora incluye CVE-2026-115731 (Perforce Puppet Enterprise). Fecha límite federal: 01/12/2026.
+
+---
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 — Puppet Enterprise:** inventariar servidores Puppet (versión instalada); parchear a la versión correspondiente de la línea y reiniciar Puppet Server. Revisar autosigning (`puppet config print autosign --section server`) y deshabilitarlo o restringirlo a validación fuerte. Listar certificados firmados (`puppetserver ca list --all`) y revocar los no reconocidos.
+2. 🔴 **Prioridad 2 — Check Point/UnrealIRCd:** confirmar que no quedan gateways/servidores sin parchear tras el deadline del 16/11; si los hay, asumir compromiso y cazar IOCs (webshells TSGA/TSProxy, `/tmp/dynamic_socket`, `destroy_v6`).
+3. 🟠 **Prioridad 3 — Dispositivos EOL:** aislar del Internet o reemplazar D-Link DSL-6740C/DIR-600L y DrayTek Vigor2960 con CVEs críticos sin parche.
+4. 🟡 **General:** revisar reportes y actividad del servidor Puppet desde el 03/11 en busca de abuso (submissions desde hosts inusuales, procesos hijo inesperados del servicio Puppet).
+
+## 3. Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** deshabilitar autosigning abierto en Puppet; restringir emisión de certificados a aprobación manual o validación fuerte; segmentar el Puppet Server del resto de la red.
+2. 🟠 **Threat hunting:** buscar certificados emitidos a nombres no reconocidos alrededor del 03/11; revisar logs de reportes del Puppet Server; cazar actividad de wfx-loot en repositorios GitHub.
+3. 🟡 **Tuning de detecciones:** añadir reglas Sigma para submissions de reportes Puppet anómalos y procesos hijo inesperados del servicio Puppet Server.
+4. 🟡 **Automatización:** integrar el catálogo KEV en el pipeline de priorización; alertar automáticamente ante nuevas adiciones con deadline federal.
+5. 🟢 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV (BOD 26-04) como SLA interno de parcheo.
+
+---
+
+## 4. Resumen ejecutivo
+
+- **Nuevo KEV el 17/11:** CVE-2026-115731 (Perforce Puppet Enterprise, deserialización de datos no confiables, CVSS 4.0 9.4). Explotación confirmada por CISA; deadline federal 01/12/2026.
+- **Parche disponible desde el 03/11:** PE 2026.0.1 / 2025.12.1 / 2023.8.13 y Puppet Core 9.1.3 / 8.22.2. Requiere reinicio del Puppet Server.
+- **Riesgo principal:** un cliente con certificado firmado por la CA puede enviar un reporte manipulado y ejecutar código en el Puppet Server; con autosigning abierto, la barrera de entrada cae a casi cero.
+- **CVE hermano CVE-2026-115732** (bypass de autorización, CVSS ~9.0) se corrige en las mismas versiones; parchear una corrige ambas.
+- **Check Point Gaia y UnrealIRCd:** deadline del 16/11 cumplido; verificar que no queden sistemas sin parchear.
+
+---
+
+## 5. Novedades del 17/11
+
+### 5.1 KEV / explotación confirmada
+
+| CVE | CVSS | Producto | Impacto | EPSS |
+|---|---|---|---|---|
+| 🔴 CVE-2026-115731 | 9.4 (CVSS 4.0) | Perforce Puppet Enterprise | Deserialización de datos no confiables en el procesamiento de reportes → RCE como usuario del Puppet Server | — |
+
+> ℹ️ CISA no nombró atacante ni publicó IOCs. El listing confirma explotación activa; el alcance real se desconoce.
+
+### 5.2 Hallazgo por CVE (detalle)
+
+**CVE-2026-115731 — Perforce Puppet Enterprise (deserialización de datos no confiables)**
+
+- **CVSS:** 9.4 (Crítica, CVSS 4.0). Algunas bases muestran 9.9 en CVSS 3.x; el registro oficial lista 9.4 en CVSS 4.0. **CWE-502** (deserialización de datos no confiables).
+- **Producto afectado:** Puppet Enterprise 2023.8.0–2023.8.12, 2025.0.0–2025.12.0, 2026.0.0 (corregido en 2023.8.13 / 2025.12.1 / 2026.0.1). Puppet Core 8.22.1 y anteriores y 9.1.2 y anteriores (corregido en 8.22.2 / 9.1.3).
+- **Explotación:** activa (KEV el 17/11). Requiere certificado de agente firmado por la CA. Con autosigning abierto, la barrera cae a casi cero.
+- **Impacto:** RCE como usuario del servicio Puppet Server, con acceso potencial a la clave de firma de certificados y a la compilación de catálogos del fleet.
+- **Mitigación:** actualizar a la versión fija de la línea correspondiente y reiniciar Puppet Server; deshabilitar o restringir autosigning; auditar certificados firmados; revisar reportes y actividad desde el 03/11.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1078 (Valid Accounts) por el uso de certificados de agente.
+
+**CVE-2026-115732 — Puppet Enterprise (bypass de autorización, hermano)**
+
+- **CVSS:** ~9.0 (Alta, CVSS 3.x, cifra de fuente única). **CWE** no confirmado en fuentes.
+- **Producto afectado:** mismas líneas que CVE-2026-115731.
+- **Explotación:** sin evidencia de explotación (no figura en KEV).
+- **Mitigación:** se corrige en las mismas versiones; parchear una corrige ambas.
+
+---
+
+## 6. Contexto de seguimiento (sin cambios respecto al 16/11)
+
+- **CVE-2026-123039 (Check Point Gaia)** y **CVE-2026-114713 (UnrealIRCd):** deadline federal 16/11 cumplido. Sin novedades adicionales. Sistemas sin parchear deben asumirse comprometidos.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak):** sin cambios; controles de bloqueo NTLM saliente vigentes.
+- **PHP2Shell (CVE-2026-109618/109619):** explotación activa contra portales Mobile Access y PAN-OS; sin novedades el 17/11.
+- **Dispositivos EOL (D-Link, DrayTek):** sin cambios; pendiente de reemplazo o segmentación.
+
+---
+
+## 7. Cobertura y limitaciones
+
+- CISA añadió un único CVE al KEV el 17/11 (CVE-2026-115731). No se detectaron otras adiciones oficiales.
+- NVD sin novedades críticas adicionales publicadas el 17/11; cobertura centrada en el KEV y seguimiento de hallazgos previos.
+- EPSS y estados de explotación corresponden a las fuentes citadas a la fecha de consulta (18/11/2026). CISA no publicó IOCs para CVE-2026-115731.
+
+```json
+{"fecha":"2026-11-17","cves":[{"id":"CVE-2026-115731","producto":"Perforce Puppet Enterprise (Puppet Server)","cvss":9.4,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a PE 2026.0.1 / 2025.12.1 / 2023.8.13 o Puppet Core 9.1.3 / 8.22.2 y reiniciar Puppet Server.","runbook":"1) Inventariar servidores Puppet y version instalada. 2) Parchear a la version fija de la linea correspondiente. 3) Reiniciar Puppet Server. 4) Revisar autosigning y certificados firmados; revocar los no reconocidos.","epss":null,"iocs":[],"sigma":"Regla Sigma: deteccion de submissions de reportes Puppet anormales hacia el Puppet Server desde hosts no reconocidos.","playbook":{"triage":["Verificar version instalada de Puppet Server.","Revisar configuracion de autosigning."],"contencion":["Deshabilitar o restringir autosigning.","Segmentar el Puppet Server de la red."],"verificacion":["Confirmar version parcheada tras reinicio.","Validar ausencia de certificados no reconocidos y de actividad anomala desde el 03/11."]}}],"otras_amenazas":[]}
+```
+ENTRYEOF
+echo done
+
 # 📋 Informe CTI Diario — 2026-11-16
 
 **Fecha del informe:** 17/11/2026  **Cobertura:** novedades del domingo 16 de noviembre de 2026 (America/Santiago)
