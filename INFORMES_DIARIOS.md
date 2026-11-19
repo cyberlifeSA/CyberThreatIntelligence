@@ -1,3 +1,188 @@
+# 🔴 Informe CTI Diario — 2026-11-18
+
+**Fecha del informe:** 19/11/2026  **Cobertura:** novedades del martes 18 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · DSM = DiskStation Manager · LLM = modelo de lenguaje grande · NAS = almacenamiento conectado a red.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> 📌 **Resumen en 30 segundos:** CISA añadió 4 CVEs al KEV el 18/11: Synology DSM (CVE-2024-10441, CVSS 9.8, explotado por ransomware C3RB3R), LiteLLM (CVE-2026-40217, RCE), Apache Axis 1.x (CVE-2026-90436, RCE unauth), REDCap (CVE-2026-90817, RCE unauth). Además se publicaron 5 CVEs críticos de NGINX (CVE-2026-123007, CVSS 9.2) con PoC público y explotación confirmada en cloud. Priorizar Synology (ransomware activo) y NGINX (PoC público).
+
+---
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM; si no es posible, aislar del Internet. Ransomware C3RB3R activo. | 1-2 h |
+| 2 | CVE-2026-123007 (NGINX HTTP/2) | 🔴 9.2 | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2. PoC público. | 30 min-1 h |
+| 3 | CVE-2026-90817 (REDCap) | 🔴 ~9.8 | Actualizar a 16.0.49/17.3.10/17.4.4. RCE unauth. | 1-2 h |
+| 4 | CVE-2026-90436 (Apache Axis 1.x) | 🔴 Crítico | Eliminar Axis 1.x del classpath o actualizar Confluence/N-central. | 2-4 h |
+| 5 | CVE-2026-40217 (LiteLLM) | 🟠 8.8 | Actualizar LiteLLM post 2026-04-08; restringir /guardrails/test_custom_code. | 30 min-1 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - Synology DSM (CVE-2024-10441, 9.8, KEV) | Parchear DSM a la versión fija; si no es posible, aislar del Internet. Ransomware C3RB3R desplegándose contra NAS sin parchear. Deadline federal 21/11. |
+| 2 | 🔴 P2 - NGINX (CVE-2026-123007 y hermanos, 9.2, PoC público) | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2 como mitigación temporal. PoC público en GitHub; explotación confirmada en cloud. |
+| 3 | 🔴 P3 - REDCap (CVE-2026-90817, ~9.8, KEV) | Actualizar a 16.0.49 / 17.3.10 / 17.4.4. RCE unauth con hash de encuesta pública. Deadline federal 21/11. |
+| 4 | 🟠 P4 - Apache Axis 1.x (CVE-2026-90436, Crítico, KEV) | Eliminar Axis 1.x del classpath de Confluence/N-central u otras apps; Axis 1.x es EOL. Deadline federal 21/11. |
+| 5 | 🟠 P5 - LiteLLM (CVE-2026-40217, 8.8, KEV) | Actualizar LiteLLM a versión posterior a 2026-04-08; restringir endpoint /guardrails/test_custom_code. Deadline federal 02/12. |
+| 6 | 🟡 General | Seguimiento de hallazgos previos (Puppet Enterprise, Check Point, UnrealIRCd, dispositivos EOL). Sin novedades adicionales el 18/11. |
+
+> ℹ️ CISA añadió 4 CVEs al KEV el 18/11. NGINX no está en KEV aún pero tiene PoC público y explotación confirmada en investigación.
+
+---
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 - Synology DSM:** inventariar NAS Synology (versión DSM); parchear a la versión fija de la línea (7.2.2-72806-1, 7.2.1-69057-6, 7.2-64570-4, 7.1.1-42962-7). Si no es posible, aislar del Internet y verificar integridad de backups. Buscar indicadores de C3RB3R (archivos .c3rb3r, ransom note).
+2. 🔴 **Prioridad 2 - NGINX:** inventariar servidores NGINX con HTTP/2 habilitado; parchear a 1.31.9 (mainline) o 1.30.7 (stable). Como mitigación temporal, deshabilitar HTTP/2 (`listen 443 ssl;` sin `http2`). Verificar que no haya proxies HTTP/2 terminando delante.
+3. 🔴 **Prioridad 3 - REDCap:** inventariar instancias REDCap ≥13.3.0; actualizar a 16.0.49 / 17.3.10 / 17.4.4. Revisar logs de acceso a endpoints de survey passthrough (__passthru) y Data Import.
+4. 🟠 **Prioridad 4 - Apache Axis:** buscar JARs de org.apache.axis:axis en classpaths de Confluence, N-central y otras apps Java. Eliminar o reemplazar. Axis 1.x es EOL sin parche.
+5. 🟠 **Prioridad 5 - LiteLLM:** inventariar instancias LiteLLM; actualizar a versión posterior a 2026-04-08. Restringir acceso al endpoint /guardrails/test_custom_code.
+6. 🟡 **General:** verificar que no queden sistemas Synology sin parchear tras el deadline del 21/11; asumir compromiso y cazar IOCs si los hay.
+
+## 3. Recomendaciones SOC L2
+
+1. 🔴 **Hardening (Synology):** deshabilitar acceso remoto innecesario a NAS; habilitar 2FA en cuentas admin; segmentar NAS de la red de producción; verificar integridad de backups offline.
+2. 🔴 **Hardening (NGINX):** deshabilitar HTTP/2 donde no sea necesario; implementar WAF/IPS con firmas para CVE-2026-123007; monitorear tráfico HTTP/2 anómalo (volumen alto de control frames).
+3. 🟠 **Threat hunting:** buscar en logs de NGINX conexiones HTTP/2 con volumen anómalo de frames (indicador de explotación); buscar en Synology actividad de C3RB3R (archivos .c3rb3r, procesos inusuales).
+4. 🟠 **Tuning de detecciones:** crear reglas Sigma para tráfico HTTP/2 anómalo (alto volumen de WINDOW_UPDATE/RST_STREAM); alertar sobre acceso a /guardrails/test_custom_code en LiteLLM; detectar JARs de Axis 1.x en inventario de software.
+5. 🟡 **Automatización:** integrar KEV en pipeline de priorización; alertar automáticamente ante nuevas adiciones con deadline federal; monitorear NVD para CVEs con PoC público en HTTP/2.
+6. 🟡 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV (BOD 26-04) como SLA interno; mantener inventario actualizado de software expuesto a Internet (NGINX, Synology, REDCap).
+
+---
+
+## 4. Resumen ejecutivo
+
+- **4 nuevos CVEs en KEV el 18/11:** Synology DSM (CVE-2024-10441, 9.8, ransomware C3RB3R), LiteLLM (CVE-2026-40217, RCE), Apache Axis 1.x (CVE-2026-90436, RCE unauth), REDCap (CVE-2026-90817, RCE unauth). Deadlines federales 21/11 y 02/12.
+- **NGINX crítico con PoC público:** CVE-2026-123007 (CVSS 9.2) y 4 CVEs hermanos afectan NGINX 1.9.5-1.31.8 con HTTP/2. PoC público en GitHub; explotación confirmada en cloud. Parche disponible (1.31.9/1.30.7).
+- **Ransomware activo contra Synology:** C3RB3R está desplegándose contra NAS Synology sin parchear con CVE-2024-10441 (parcheado desde dic 2024 pero muchos dispositivos siguen sin actualizar).
+- **Axis 1.x es EOL:** sin parche disponible; la única mitigación es eliminarlo del classpath. Afecta Confluence Data Center y N-able N-central.
+- **REDCap expone datos de investigación:** RCE unauth con hash de encuesta pública; afecta plataformas de captura de datos de investigación y clínicos.
+
+---
+
+## 5. Novedades del 18/11
+
+### 5.1 KEV / explotación confirmada
+
+| CVE | CVSS | Producto | Impacto | EPSS |
+|---|---|---|---|---|
+| 🔴 CVE-2024-10441 | 9.8 (v3) | Synology DSM | RCE via improper encoding en system plugin daemon → C3RB3R ransomware | - |
+| 🔴 CVE-2026-90817 | ~9.8 (v3) | REDCap | RCE unauth via survey passthrough routing + Data Import | - |
+| 🔴 CVE-2026-90436 | Crítico (v3) | Apache Axis 1.x | RCE unauth via unsafe reflection (CWE-470) en SOAP fault handling | - |
+| 🟠 CVE-2026-40217 | 8.8 (v3) | LiteLLM | RCE via bytecode rewriting en /guardrails/test_custom_code | - |
+
+### 5.2 Hallazgos por CVE (detalle)
+
+**CVE-2024-10441 — Synology DiskStation Manager (DSM) (Improper Encoding/Escaping of Output)**
+
+- **CVSS:** 9.8 (Crítica, CVSS 3.1). **CWE-116** (improper encoding or escaping of output). **EPSS:** no disponible.
+- **Producto afectado:** Synology DSM < 7.2.2-72806-1, < 7.2.1-69057-6, < 7.2-64570-4, < 7.1.1-42962-7, < 6.2.4-25556-8. También BeeStation OS (BSM) < 1.1-65374.
+- **Explotación:** activa (KEV el 18/11). C3RB3R ransomware desplegándose contra NAS sin parchear. Parche disponible desde dic 2024 (Synology-SA-24:20).
+- **Impacto:** RCE como root en el NAS; acceso a datos almacenados; despliegue de ransomware C3RB3R con cifrado de archivos y nota de rescate.
+- **Mitigación:** actualizar DSM a la versión fija de la línea correspondiente; si no es posible, aislar del Internet. Verificar integridad de backups offline.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1486 (Data Encrypted for Impact).
+- **IOCs:** archivos con extensión .c3rb3r; ransom note típica de C3RB3R; procesos inusuales en NAS.
+- **Sigma:** `title: Synology DSM C3RB3R Ransomware Activity | description: Detects file creation with .c3rb3r extension or C3RB3R ransom note on Synology DSM | logsource: file_event | detection: selection: TargetFilename|endswith: '.c3rb3r' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión DSM instalada; buscar archivos .c3rb3r o ransom notes; revisar logs de acceso al NAS.
+  - **Contención:** aislar NAS de la red; deshabilitar acceso remoto; verificar integridad de backups.
+  - **Verificación:** confirmar versión DSM parcheada; validar ausencia de archivos cifrados; restaurar desde backup limpio si es necesario.
+
+**CVE-2026-90817 — Vanderbilt University REDCap (Code Injection / RCE)**
+
+- **CVSS:** ~9.8 (Crítica, CVSS 3.1, cifra de fuente única). **CWE-73** (external control of file name or path). **EPSS:** no disponible.
+- **Producto afectado:** REDCap 13.3.0 y superior. Corregido en 16.0.49, 17.3.10 y 17.4.4.
+- **Explotación:** activa (KEV el 18/11). Requiere conocimiento de un hash de encuesta pública válido.
+- **Impacto:** RCE unauth en el servidor REDCap; exposición de datos de investigación y clínicos. Ejecución como proceso web (www-data).
+- **Mitigación:** actualizar a 16.0.49 / 17.3.10 / 17.4.4. Revisar logs de acceso a endpoints de survey passthrough (__passthru) y Data Import.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1059 (Command and Scripting Interpreter).
+- **IOCs:** requests HTTP anómalos a endpoints __passthru con parámetros de file-path o stream manipulados; procesos hijo inesperados del servidor web.
+- **Sigma:** `title: REDCap Survey Passthrough RCE Attempt | description: Detects HTTP requests to REDCap __passthru endpoint with suspicious file-path parameters | logsource: web | detection: selection: cs-uri-stem|contains: '__passthru' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión REDCap instalada; revisar logs de acceso a __passthru y Data Import; buscar procesos hijo inesperados del servidor web.
+  - **Contención:** actualizar REDCap; restringir acceso a encuestas públicas si no son necesarias; segmentar el servidor REDCap.
+  - **Verificación:** confirmar versión parcheada; validar ausencia de actividad anómala en logs post-parche.
+
+**CVE-2026-90436 — Apache Axis 1.x (Unsafe Reflection / RCE)**
+
+- **CVSS:** Crítico (CVSS 3.1, cifra no confirmada en NVD; Snyk reporta 10.0). **CWE-470** (use of externally-controlled input to select classes or code). **EPSS:** no disponible.
+- **Producto afectado:** Apache Axis 1.x (todas las versiones hasta 1.4, EOL). Afecta apps que usan Axis 1.x: Confluence Data Center (XML-RPC/SOAP APIs), N-able N-central.
+- **Explotación:** activa (KEV el 18/11). Unauth RCE via SOAP Fault handling; el atacante envía un SOAP Fault con `<exceptionName>` que nombra una clase arbitraria. Rapid7 detectó explotación contra Confluence Data Center y N-central el 06/11. Huntress reportó 2 intentos de explotación el 12/11.
+- **Impacto:** RCE unauth en el servidor que ejecuta Axis 1.x; compromiso de la app host (Confluence, N-central).
+- **Mitigación:** no hay parche para Axis 1.x (EOL). Eliminar Axis 1.x del classpath o actualizar la app host. N-able deshabilitó la feature "Legacy API" que exponía la superficie de ataque.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1059.006 (Command and Scripting Interpreter: Python) — MITRE no documenta técnica específica para unsafe reflection; T1190 es la más cercana.
+- **IOCs:** requests SOAP con `<exceptionName>` sospechoso en el body; procesos hijo inesperados de la JVM de Confluence/N-central.
+- **Sigma:** `title: Apache Axis Unsafe Reflection Exploit Attempt | description: Detects SOAP requests containing exceptionName element targeting Axis 1.x | logsource: web | detection: selection: cs-uri-stem|contains: 'axis' | condition: selection`
+- **Playbook:**
+  - **Triage:** buscar JARs de org.apache.axis:axis en classpaths; revisar logs de acceso SOAP en Confluence/N-central; buscar procesos hijo inesperados de la JVM.
+  - **Contención:** eliminar Axis 1.x del classpath; deshabilitar Legacy API en N-central; segmentar servidores afectados.
+  - **Verificación:** confirmar ausencia de JARs de Axis 1.x; validar que no haya actividad SOAP anómala post-mitigación.
+
+**CVE-2026-40217 — BerriAI LiteLLM (Unprotected Alternate Channel / RCE)**
+
+- **CVSS:** 8.8 (Alta, CVSS 3.1, Red Hat). **CWE-470** (use of externally-controlled input to select classes or code) o CWE-94 (improper control of code generation). **EPSS:** no disponible.
+- **Producto afectado:** LiteLLM ≤ 2026-04-08. Afecta proxy server para APIs de LLM.
+- **Explotación:** activa (KEV el 18/11). RCE via bytecode rewriting en endpoint /guardrails/test_custom_code. Requiere admin key de LiteLLM.
+- **Impacto:** RCE como root en el contenedor LiteLLM (default Docker image corre como root); acceso a claves de API de LLM, configuración, logs de auditoría.
+- **Mitigación:** actualizar LiteLLM a versión posterior a 2026-04-08; restringir acceso al endpoint /guardrails/test_custom_code; no exponer LiteLLM a Internet sin autenticación fuerte.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1078 (Valid Accounts) por el uso de admin key.
+- **IOCs:** requests POST a /guardrails/test_custom_code; actividad anómala en el contenedor LiteLLM; procesos hijo inesperados.
+- **Sigma:** `title: LiteLLM Guardrails Code Execution Attempt | description: Detects POST requests to /guardrails/test_custom_code endpoint | logsource: web | detection: selection: cs-method: 'POST' AND cs-uri-stem|contains: '/guardrails/test_custom_code' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión LiteLLM; revisar logs de acceso a /guardrails/test_custom_code; buscar procesos hijo inesperados en el contenedor.
+  - **Contención:** actualizar LiteLLM; restringir endpoint; rotar claves de API de LLM si se sospecha compromiso.
+  - **Verificación:** confirmar versión parcheada; validar ausencia de actividad anómala post-parche; auditar claves de API.
+
+### 5.3 Hallazgos adicionales (no KEV pero críticos)
+
+**CVE-2026-123007 y hermanos — NGINX (HTTP/2 Memory Corruption / RCE)**
+
+- **CVEs:** CVE-2026-123007 (heap buffer overflow, HTTP/2), CVE-2026-123633 (heap buffer overflow, HTTP/2), CVE-2026-123634 (use-after-free, HTTP/2), CVE-2026-121810 (integer overflow, HTTP/2), CVE-2026-113425 (use-after-free, mail proxy).
+- **CVSS:** 9.2 (Crítico, CVSS 4.0) / 8.1 (Alta, CVSS 3.1) para todos. **EPSS:** no disponible.
+- **Producto afectado:** NGINX 1.9.5-1.30.6 y 1.31.0-1.31.8 (HTTP/2); mail proxy 0.5.33-1.30.6 y 1.31.0-1.31.8. NGINX Plus R34-R36. NGINX Gateway Fabric 2.0.0-2.8.1.
+- **Explotación:** PoC público en GitHub (sfewer-r7/CVE-2026-123007) con RCE unauth completo contra NGINX 1.31.8. Explotación confirmada en cloud (AWS, GCP, Azure). Requiere ~128 GB de tráfico HTTP/2 y derrota de ASLR.
+- **Impacto:** RCE como proceso worker de NGINX; exposición de claves TLS, payloads HTTPS, tokens de autenticación, cookies de sesión, datos proxeados.
+- **Mitigación:** actualizar a 1.31.9 (mainline) o 1.30.7 (stable). Mitigación temporal: deshabilitar HTTP/2 (`listen 443 ssl;` sin `http2`). Nota: deshabilitar HTTP/2 solo protege contra CVE-2026-123007 y CVE-2026-123633, no contra los otros 3.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1499 (Endpoint Denial of Service) para el crash del worker.
+- **IOCs:** tráfico HTTP/2 con volumen anómalo de control frames (WINDOW_UPDATE, RST_STREAM); conexiones HTTP/2 de larga duración con alto volumen de datos.
+- **Sigma:** `title: NGINX HTTP/2 Anomalous Traffic (CVE-2026-123007) | description: Detects high volume of HTTP/2 control frames indicative of exploitation attempt | logsource: network | detection: selection: protocol: 'HTTP/2' AND frame_type: 'WINDOW_UPDATE' OR frame_type: 'RST_STREAM' | condition: selection | count: >1000 per minute`
+- **Playbook:**
+  - **Triage:** inventariar servidores NGINX con HTTP/2 habilitado; verificar versión instalada; revisar logs de acceso HTTP/2.
+  - **Contención:** parchear a 1.31.9/1.30.7; deshabilitar HTTP/2 como mitigación temporal; implementar IPS con firmas para CVE-2026-123007.
+  - **Verificación:** confirmar versión parcheada; validar que HTTP/2 esté deshabilitado si no se parcheó; monitorear tráfico HTTP/2 post-mitigación.
+
+---
+
+## 6. Contexto de seguimiento (sin cambios respecto al 17/11)
+
+- **CVE-2026-115731 (Puppet Enterprise):** deadline federal 01/12. Sin novedades el 18/11.
+- **CVE-2026-116779 (FreeSWITCH):** en KEV desde 09/11. Sin novedades el 18/11.
+- **CVE-2026-123039 (Check Point Gaia) y CVE-2026-114713 (UnrealIRCd):** deadline federal 16/11 cumplido. Sin novedades.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak):** sin cambios.
+- **Dispositivos EOL (D-Link, DrayTek):** sin cambios; pendiente de reemplazo.
+
+---
+
+## 7. Cobertura y limitaciones
+
+- CISA añadió 4 CVEs al KEV el 18/11 (CVE-2024-10441, CVE-2026-40217, CVE-2026-90436, CVE-2026-90817). NGINX no está en KEV aún.
+- NVD publicó CVEs de NGINX el 18/11 con PoC público; explotación confirmada en investigación pero no en KEV.
+- EPSS no disponible para los CVEs del 18/11 en las fuentes consultadas.
+- Cobertura centrada en KEV y CVEs críticos con PoC público. No se detectaron otras adiciones oficiales al KEV el 18/11.
+- CISA no publicó IOCs para los 4 CVEs añadidos al KEV el 18/11.
+
+```json
+{"fecha":"2026-11-18","cves":[{"id":"CVE-2024-10441","producto":"Synology DiskStation Manager (DSM)","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar DSM a version fija de la linea correspondiente (7.2.2-72806-1, 7.2.1-69057-6, 7.2-64570-4, 7.1.1-42962-7).","runbook":"1) Inventariar NAS Synology y version DSM. 2) Parchear a version fija. 3) Si no es posible, aislar del Internet. 4) Buscar indicadores de C3RB3R (.c3rb3r, ransom notes).","epss":null,"iocs":["archivos .c3rb3r","ransom note C3RB3R","procesos inusuales en NAS"],"sigma":"Regla Sigma: deteccion de creacion de archivos con extension .c3rb3r en Synology DSM.","playbook":{"triage":["Verificar version DSM instalada.","Buscar archivos .c3rb3r o ransom notes.","Revisar logs de acceso al NAS."],"contencion":["Aislar NAS de la red.","Deshabilitar acceso remoto.","Verificar integridad de backups offline."],"verificacion":["Confirmar version DSM parcheada.","Validar ausencia de archivos cifrados.","Restaurar desde backup limpio si es necesario."]}},"id":"CVE-2026-90817","producto":"Vanderbilt University REDCap","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a REDCap 16.0.49 / 17.3.10 / 17.4.4.","runbook":"1) Inventariar instancias REDCap >=13.3.0. 2) Actualizar a version fija. 3) Revisar logs de acceso a __passthru y Data Import. 4) Buscar procesos hijo inesperados del servidor web.","epss":null,"iocs":["requests HTTP anomalos a __passthru con file-path manipulado","procesos hijo inesperados del servidor web"],"sigma":"Regla Sigma: deteccion de requests HTTP a endpoint __passthru de REDCap con parametros de file-path sospechosos.","playbook":{"triage":["Verificar version REDCap instalada.","Revisar logs de acceso a __passthru y Data Import.","Buscar procesos hijo inesperados del servidor web."],"contencion":["Actualizar REDCap a version fija.","Restringir acceso a encuestas publicas si no son necesarias.","Segmentar el servidor REDCap."],"verificacion":["Confirmar version parcheada.","Validar ausencia de actividad anomala en logs post-parche."]}},"id":"CVE-2026-90436","producto":"Apache Axis 1.x","cvss":10.0,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Eliminar Axis 1.x del classpath (EOL, sin parche). N-able deshabilito Legacy API.","runbook":"1) Buscar JARs de org.apache.axis:axis en classpaths. 2) Eliminar o reemplazar Axis 1.x. 3) Revisar logs SOAP en Confluence/N-central. 4) Buscar procesos hijo inesperados de la JVM.","epss":null,"iocs":["requests SOAP con exceptionName sospechoso","procesos hijo inesperados de la JVM"],"sigma":"Regla Sigma: deteccion de requests SOAP con elemento exceptionName hacia Axis 1.x.","playbook":{"triage":["Buscar JARs de org.apache.axis:axis en classpaths.","Revisar logs de acceso SOAP en Confluence/N-central.","Buscar procesos hijo inesperados de la JVM."],"contencion":["Eliminar Axis 1.x del classpath.","Deshabilitar Legacy API en N-central.","Segmentar servidores afectados."],"verificacion":["Confirmar ausencia de JARs de Axis 1.x.","Validar que no haya actividad SOAP anomala post-mitigacion."]}},"id":"CVE-2026-40217","producto":"BerriAI LiteLLM","cvss":8.8,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar LiteLLM a version posterior a 2026-04-08; restringir /guardrails/test_custom_code.","runbook":"1) Inventariar instancias LiteLLM. 2) Actualizar a version posterior a 2026-04-08. 3) Restringir acceso a /guardrails/test_custom_code. 4) Revisar logs de acceso al endpoint.","epss":null,"iocs":["requests POST a /guardrails/test_custom_code","actividad anomala en contenedor LiteLLM","procesos hijo inesperados"],"sigma":"Regla Sigma: deteccion de requests POST a endpoint /guardrails/test_custom_code en LiteLLM.","playbook":{"triage":["Verificar version LiteLLM.","Revisar logs de acceso a /guardrails/test_custom_code.","Buscar procesos hijo inesperados en el contenedor."],"contencion":["Actualizar LiteLLM.","Restringir endpoint.","Rotar claves de API de LLM si se sospecha compromiso."],"verificacion":["Confirmar version parcheada.","Validar ausencia de actividad anomala post-parche.","Auditar claves de API."]}},"id":"CVE-2026-123007","producto":"NGINX (HTTP/2)","cvss":9.2,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"PoC","parche":"Actualizar a NGINX 1.31.9 (mainline) o 1.30.7 (stable); mitigacion temporal: deshabilitar HTTP/2.","runbook":"1) Inventariar servidores NGINX con HTTP/2 habilitado. 2) Verificar version instalada. 3) Parchear o deshabilitar HTTP/2. 4) Implementar IPS con firmas CVE-2026-123007.","epss":null,"iocs":["trafico HTTP/2 con volumen anomalo de control frames (WINDOW_UPDATE, RST_STREAM)","conexiones HTTP/2 de larga duracion con alto volumen de datos"],"sigma":"Regla Sigma: deteccion de trafico HTTP/2 con alto volumen de control frames indicativo de intento de explotacion CVE-2026-123007.","playbook":{"triage":["Inventariar servidores NGINX con HTTP/2 habilitado.","Verificar version instalada.","Revisar logs de acceso HTTP/2."],"contencion":["Parchear a 1.31.9/1.30.7.","Deshabilitar HTTP/2 como mitigacion temporal.","Implementar IPS con firmas CVE-2026-123007."],"verificacion":["Confirmar version parcheada.","Validar que HTTP/2 este deshabilitado si no se parcheo.","Monitorear trafico HTTP/2 post-mitigacion."]}}],"otras_amenazas":[{"nombre":"C3RB3R","tipo":"ransomware","resumen":"Ransomware desplegandose contra NAS Synology sin parchear con CVE-2024-10441."},{"nombre":"nginx2root","tipo":"campana","resumen":"5 CVEs de NGINX con PoC publico y explotacion confirmada en cloud (AWS, GCP, Azure)."}]}
+```
+
+---
+
 # 📋 Informe CTI Diario — 2026-11-17
 
 **Fecha del informe:** 18/11/2026  **Cobertura:** novedades del lunes 17 de noviembre de 2026 (America/Santiago)
