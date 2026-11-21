@@ -1,3 +1,198 @@
+# 🔴 Informe CTI Diario — 2026-11-20
+
+**Fecha del informe:** 21/11/2026  **Cobertura:** novedades del viernes 20 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · XML-RPC = protocolo de llamada a procedimiento remoto basado en XML · VPN = red privada virtual · MFA = autenticación multifactor · SAML = estándar de autenticación federada.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> 📌 **Resumen en 30 segundos:** CISA añadió 4 CVEs al KEV el 20/11 con deadline federal 23/11: VMware vCenter (CVE-2026-59310, directory traversal, 9.8), Apache Roller (CVE-2026-129448, deserialización XML-RPC, 9.8), Cisco Expressway (CVE-2026-76466, credenciales hard-coded, 9.8) y SAP NetWeaver Enterprise Portal (CVE-2025-42884, SQL injection, 6.5). Parchear antes del 23/11; asumir compromiso si no es posible.
+
+---
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter a 9.1.1.0200/9.0.2.0200/8.0 U3m/5.2.5. Ransomware activo. | 1-2 h |
+| 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Pre-auth RCE. | 30 min-1 h |
+| 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Creds hard-coded en DB service. RCE root. | 1-2 h |
+| 4 | CVE-2025-42884 (SAP NetWeaver EP) | 🟡 6.5 | Aplicar SAP Note 3660969. SQL injection en portal. | 1-2 h |
+| 5 | CVE-2026-19868 (SonicWall SonicOS) | 🟠 — | Actualizar SonicOS a 7.3.4-7013/8.2.3-8015. Bypass SAML MFA. KEV desde 06/11. | 30 min-1 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - VMware vCenter (CVE-2026-59310, 9.8, KEV) | Parchear vCenter a 9.1.1.0200 / 9.0.2.0200 / 8.0 U3m / 5.2.5. Directory traversal en Syslog → RCE. Ataque activo por actor China-nexus desplegando ransomware. Deadline federal 23/11. |
+| 2 | 🔴 P2 - Apache Roller (CVE-2026-129448, 9.8, KEV) | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Deserialización pre-auth en XML-RPC endpoint. Explotación activa confirmada. Deadline federal 23/11. |
+| 3 | 🔴 P3 - Cisco Expressway (CVE-2026-76466, 9.8, KEV) | Actualizar a X15.5.20. Credenciales hard-coded en database service de clustered Expressway-C/E. RCE como root sin auth. Deadline federal 23/11. |
+| 4 | 🟡 P4 - SAP NetWeaver EP (CVE-2025-42884, 6.5, KEV) | Aplicar SAP Note 3660969. SQL injection en SAP NetWeaver Enterprise Portal. Disclose/modificación de datos. Deadline federal 23/11. |
+| 5 | 🟠 P5 - SonicWall SonicOS (CVE-2026-19868, KEV desde 06/11) | Actualizar a 7.3.4-7013 / 8.2.3-8015. Bypass de SAML MFA en SSLVPN. Explotación activa. |
+| 6 | 🟡 General | Seguimiento de hallazgos previos (Synology, NGINX, Puppet, REDCap, Axis, LiteLLM). Sin novedades adicionales el 20/11. |
+
+> ℹ️ CISA añadió 4 CVEs al KEV el 20/11 con deadline federal 23/11. Todos son explotación activa confirmada.
+
+---
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 - VMware vCenter:** inventariar instancias vCenter Server; parchear a 9.1.1.0200 / 9.0.2.0200 / 8.0 U3m / 5.2.5. Revisar logs de Syslog service y buscar actividad de ransomware (archivos cifrados, procesos inusuales en ESXi host).
+2. 🔴 **Prioridad 2 - Apache Roller:** inventariar instancias Apache Roller 4.0.0-6.1.5; actualizar a 6.1.6 o deshabilitar XML-RPC. Revisar logs de acceso al endpoint XML-RPC (/xmlrpc) para requests con vendor extension types.
+3. 🔴 **Prioridad 3 - Cisco Expressway:** inventariar clustered Expressway-C/E devices; actualizar a X15.5.20. Revisar logs de database service para RPC commands anómalos; buscar accesos no autorizados.
+4. 🟡 **Prioridad 4 - SAP NetWeaver EP:** inventariar SAP NetWeaver Enterprise Portal; aplicar SAP Note 3660969. Revisar logs de portal para SQL injection en parámetros de query.
+5. 🟠 **Prioridad 5 - SonicWall SonicOS:** inventariar firewalls SonicWall con SSLVPN habilitado; actualizar a 7.3.4-7013 / 8.2.3-8015. Revisar logs de autenticación SSLVPN para bypass de MFA.
+6. 🟡 **General:** verificar que no queden sistemas sin parchear tras el deadline del 23/11; asumir compromiso y cazar IOCs si los hay.
+
+---
+
+## 3. Recomendaciones SOC L2
+
+1. 🔴 **Hardening (vCenter):** restringir acceso de red al Syslog service de vCenter; segmentar vCenter de la red de producción; verificar integridad de backups de VMs.
+2. 🔴 **Hardening (Roller):** deshabilitar XML-RPC si no se usa; implementar WAF con firmas para deserialización Java en XML-RPC; monitorear tráfico a /xmlrpc.
+3. 🟠 **Threat hunting:** buscar en vCenter actividad de ransomware (archivos cifrados, procesos inusuales en ESXi); buscar en Expressway RPC commands anómalos; buscar en SonicWall autenticaciones SSLVPN sin MFA.
+4. 🟠 **Tuning de detecciones:** crear reglas Sigma para deserialización Java en XML-RPC (Apache Roller); alertar sobre accesos al Syslog service de vCenter desde IPs no reconocidas; detectar RPC commands anómalos en Expressway database service.
+5. 🟡 **Automatización:** integrar KEV en pipeline de priorización; alertar automáticamente ante nuevas adiciones con deadline federal; monitorear NVD para CVEs con PoC público en Java deserialization.
+6. 🟡 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV (BOD 26-04) como SLA interno; mantener inventario actualizado de software expuesto a Internet (vCenter, Roller, Expressway, SonicWall).
+
+---
+
+## 4. Resumen ejecutivo
+
+- **4 nuevos CVEs en KEV el 20/11:** VMware vCenter (CVE-2026-59310, 9.8, directory traversal en Syslog), Apache Roller (CVE-2026-129448, 9.8, deserialización XML-RPC pre-auth), Cisco Expressway (CVE-2026-76466, 9.8, creds hard-coded), SAP NetWeaver EP (CVE-2025-42884, 6.5, SQL injection). Deadline federal 23/11.
+- **vCenter bajo ataque activo:** actor China-nexus desplegando ransomware mediante CVE-2026-59310. Parche disponible desde agosto 2026 pero muchos sistemas siguen sin actualizar.
+- **Apache Roller con RCE pre-auth:** deserialización de vendor extension types en XML-RPC antes de autenticación. Afecta versiones 4.0.0-6.1.4. Fix en 6.1.6.
+- **Cisco Expressway RCE como root:** credenciales hard-coded en database service de clustered devices. Sin workaround; solo parche X15.5.20.
+- **SonicWall SonicOS sigue en KEV:** CVE-2026-19868 (bypass SAML MFA en SSLVPN). Explotación activa desde 06/11. Actualizar a 7.3.4-7013/8.2.3-8015.
+
+---
+
+## 5. Novedades del 20/11
+
+### 5.1 KEV / explotación confirmada
+
+| CVE | CVSS | Producto | Impacto | EPSS |
+|---|---|---|---|---|
+| 🔴 CVE-2026-59310 | 9.8 (v3) | VMware vCenter | Directory traversal en Syslog → RCE. Ransomware activo. | - |
+| 🔴 CVE-2026-129448 | 9.8 (v3) | Apache Roller | Deserialización XML-RPC pre-auth → RCE. | - |
+| 🔴 CVE-2026-76466 | 9.8 (v3) | Cisco Expressway | Creds hard-coded en DB service → RCE root. | - |
+| 🟡 CVE-2025-42884 | 6.5 (v3) | SAP NetWeaver EP | SQL injection → disclose/modificación de datos. | - |
+
+> ℹ️ CISA añadió los 4 CVEs al KEV el 20/11 con deadline federal 23/11. Explotación activa confirmada para todos.
+
+### 5.2 Hallazgos por CVE (detalle)
+
+**CVE-2026-59310 — VMware vCenter Server (Directory Traversal en Syslog)**
+
+- **CVSS:** 9.8 (Crítica, CVSS 3.1). **CWE-22** (improper limitation of a pathname to a restricted directory). **EPSS:** no disponible en fuentes consultadas.
+- **Producto afectado:** VMware vCenter Server (versiones no parcheadas). Fix en 9.1.1.0200, 9.0.2.0200, 8.0 U3m, 5.2.5 (Broadcom VMSA-2026-0006.1).
+- **Explotación:** activa (KEV el 20/11). Actor China-nexus desplegando ransomware mediante directory traversal en Syslog service. Parche disponible desde agosto 2026.
+- **Impacto:** RCE en vCenter Server; acceso a infraestructura de virtualización; despliegue de ransomware en VMs y ESXi hosts.
+- **Mitigación:** actualizar vCenter a la versión fija de la línea correspondiente. Revisar logs de Syslog service y buscar actividad de ransomware.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1486 (Data Encrypted for Impact).
+- **IOCs:** archivos cifrados en VMs/ESXi hosts; procesos inusuales en ESXi; actividad anómala en Syslog service de vCenter.
+- **Sigma:** `title: VMware vCenter Syslog Directory Traversal (CVE-2026-59310) | description: Detects anomalous file access patterns in vCenter Syslog service indicative of directory traversal | logsource: file_event | detection: selection: TargetFilename|contains: '../' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión vCenter instalada; revisar logs de Syslog service; buscar archivos cifrados o procesos inusuales en ESXi hosts.
+  - **Contención:** aislar vCenter de la red si se sospecha compromiso; deshabilitar acceso remoto innecesario; verificar integridad de backups de VMs.
+  - **Verificación:** confirmar versión vCenter parcheada; validar ausencia de actividad anómala post-parche; auditar VMs y ESXi hosts.
+
+**CVE-2026-129448 — Apache Roller (Deserialización de datos no confiables en XML-RPC)**
+
+- **CVSS:** 9.8 (Crítica, CVSS 3.1). **CWE-502** (deserialización de datos no confiables). **EPSS:** no disponible en fuentes consultadas.
+- **Producto afectado:** Apache Roller 4.0.0 through 6.1.4 (también CVE-2026-82384 para 6.1.5, mismo bug). Fix en 6.1.6.
+- **Explotación:** activa (KEV el 20/11). Deserialización de vendor extension types en XML-RPC endpoint antes de autenticación. Explotación confirmada en la calle.
+- **Impacto:** RCE unauth en el servidor que ejecuta Apache Roller; acceso al sistema host y datos del blog.
+- **Mitigación:** actualizar a Apache Roller 6.1.6 o deshabilitar XML-RPC si no se usa. Implementar WAF con firmas para deserialización Java.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1059 (Command and Scripting Interpreter).
+- **IOCs:** requests HTTP POST a /xmlrpc con vendor extension types en el body; procesos hijo inesperados de la JVM de Roller.
+- **Sigma:** `title: Apache Roller XML-RPC Deserialization (CVE-2026-129448) | description: Detects HTTP POST requests to Apache Roller XML-RPC endpoint with suspicious vendor extension types | logsource: web | detection: selection: cs-method: 'POST' AND cs-uri-stem|contains: '/xmlrpc' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión Roller instalada; revisar logs de acceso a /xmlrpc; buscar procesos hijo inesperados de la JVM.
+  - **Contención:** actualizar a 6.1.6 o deshabilitar XML-RPC; implementar WAF con firmas; segmentar el servidor Roller.
+  - **Verificación:** confirmar versión parcheada; validar ausencia de actividad anómala post-parche; auditar logs de acceso.
+
+**CVE-2026-76466 — Cisco Expressway Series (Credenciales hard-coded en database service)**
+
+- **CVSS:** 9.8 (Crítica, CVSS 3.1). **CWE-798** (use of hard-coded credentials). **EPSS:** no disponible en fuentes consultadas.
+- **Producto afectado:** Cisco Expressway-C (Core) y Expressway-E (Edge) clustered devices. Fix en X15.5.20.
+- **Explotación:** activa (KEV el 20/11). RCE como root sin autenticación mediante RPC commands al database service. Explotación confirmada (SecurityWeek, SecurityAffairs).
+- **Impacto:** RCE como root en el dispositivo Expressway; acceso a credenciales y datos sensibles; compromiso de la infraestructura de comunicaciones unificadas.
+- **Mitigación:** actualizar a X15.5.20. No hay workaround disponible. Revisar logs de database service para RPC commands anómalos.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1078 (Valid Accounts) por el uso de credenciales hard-coded.
+- **IOCs:** RPC commands anómalos al database service de Expressway; accesos no autorizados a Expressway-C/E; procesos hijo inesperados.
+- **Sigma:** `title: Cisco Expressway DB Service RCE (CVE-2026-76466) | description: Detects anomalous RPC commands to Expressway database service indicative of exploitation | logsource: network | detection: selection: destination_port: 0 AND protocol: 'RPC' | condition: selection`
+- **Playbook:**
+  - **Triage:** inventariar clustered Expressway-C/E devices; verificar versión instalada; revisar logs de database service.
+  - **Contención:** actualizar a X15.5.20; restringir acceso de red al database service; segmentar dispositivos Expressway.
+  - **Verificación:** confirmar versión parcheada; validar ausencia de RPC commands anómalos post-parche; auditar accesos.
+
+**CVE-2025-42884 — SAP NetWeaver Enterprise Portal (SQL injection)**
+
+- **CVSS:** 6.5 (Media, CVSS 3.1). **CWE-89** (improper neutralization of special elements used in an SQL command). **EPSS:** no disponible en fuentes consultadas.
+- **Producto afectado:** SAP NetWeaver Enterprise Portal. Fix en SAP Note 3660969.
+- **Explotación:** activa (KEV el 20/11). SQL injection en data query logic; permite a atacante no autenticado divulgar o modificar datos.
+- **Impacto:** divulgación o modificación de datos en el portal SAP NetWeaver; posible escalación de privilegios.
+- **Mitigación:** aplicar SAP Note 3660969. Revisar logs de portal para SQL injection en parámetros de query.
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1078 (Valid Accounts) si se obtienen credenciales.
+- **IOCs:** requests HTTP con parámetros SQL sospechosos en el portal SAP NetWeaver; errores SQL en logs del portal.
+- **Sigma:** `title: SAP NetWeaver Portal SQL Injection (CVE-2025-42884) | description: Detects HTTP requests to SAP NetWeaver Enterprise Portal with suspicious SQL parameters | logsource: web | detection: selection: cs-uri-stem|contains: 'portal' AND cs-uri-query|contains: 'SELECT' OR cs-uri-query|contains: 'UNION' | condition: selection`
+- **Playbook:**
+  - **Triage:** verificar versión SAP NetWeaver EP instalada; revisar logs de portal para SQL injection; buscar errores SQL anómalos.
+  - **Contención:** aplicar SAP Note 3660969; restringir acceso al portal; segmentar el servidor SAP.
+  - **Verificación:** confirmar nota SAP aplicada; validar ausencia de SQL injection post-parche; auditar datos del portal.
+
+**CVE-2026-19868 — SonicWall SonicOS SSLVPN (Bypass de SAML MFA)**
+
+- **CVSS:** no confirmado en NVD (CWE-308, use of single-factor authentication). **EPSS:** no disponible.
+- **Producto afectado:** SonicWall SonicOS (Gen7/Gen8 firewalls) con SSLVPN habilitado. Fix en 7.3.4-7013 / 8.2.3-8015.
+- **Explotación:** activa (KEV desde 06/11). Bypass de SAML MFA en SSLVPN; usuario con credenciales válidas para método de auth alternativo puede evadir controles SAML/MFA.
+- **Impacto:** acceso no autorizado a la VPN; bypass de MFA; compromiso de la red interna.
+- **Mitigación:** actualizar a 7.3.4-7013 / 8.2.3-8015. Revisar logs de autenticación SSLVPN para bypass de MFA.
+- **MITRE ATT&CK:** T1078 (Valid Accounts) y T1133 (External Remote Services).
+- **IOCs:** autenticaciones SSLVPN exitosas sin MFA; accesos a VPN desde IPs no reconocidas.
+- **Sigma:** `title: SonicWall SSLVPN MFA Bypass (CVE-2026-19868) | description: Detects SSLVPN authentications that bypass SAML MFA controls | logsource: firewall | detection: selection: event_type: 'sslvpn_auth' AND mfa_status: 'bypassed' | condition: selection`
+- **Playbook:**
+  - **Triage:** inventariar firewalls SonicWall con SSLVPN; verificar versión SonicOS; revisar logs de auth SSLVPN.
+  - **Contención:** actualizar a 7.3.4-7013/8.2.3-8015; deshabilitar SSLVPN si no se usa; forzar MFA en todos los métodos de auth.
+  - **Verificación:** confirmar versión parcheada; validar que MFA se aplique en todos los métodos; auditar accesos VPN.
+
+---
+
+## 6. Contexto de seguimiento (sin cambios respecto al 18/11)
+
+- **CVE-2026-115731 (Puppet Enterprise):** deadline federal 01/12. Sin novedades el 20/11.
+- **CVE-2024-10441 (Synology DSM):** ransomware C3RB3R activo. Sin novedades el 20/11.
+- **CVE-2026-123007 y hermanos (NGINX):** PoC público. Sin novedades el 20/11.
+- **CVE-2026-90817 (REDCap):** deadline federal 21/11. Sin novedades el 20/11.
+- **CVE-2026-90436 (Apache Axis 1.x):** deadline federal 21/11. Sin novedades el 20/11.
+- **CVE-2026-40217 (LiteLLM):** deadline federal 02/12. Sin novedades el 20/11.
+- **CVE-2026-124194 (Outlook, NTLMv2 leak):** sin cambios.
+- **Dispositivos EOL (D-Link, DrayTek):** sin cambios; pendiente de reemplazo.
+
+---
+
+## 7. Cobertura y limitaciones
+
+- CISA añadió 4 CVEs al KEV el 20/11 (CVE-2026-59310, CVE-2026-129448, CVE-2026-76466, CVE-2025-42884) con deadline federal 23/11.
+- CVE-2026-19868 (SonicWall SonicOS) sigue en KEV desde 06/11; incluido por explotación activa continua.
+- EPSS no disponible para los CVEs del 20/11 en las fuentes consultadas.
+- Cobertura centrada en KEV y CVEs críticos con PoC público. No se detectaron otras adiciones oficiales al KEV el 20/11.
+- CISA no publicó IOCs para los 4 CVEs añadidos al KEV el 20/11.
+- Nota: la entrada del 19/11 no se encontró en el documento; puede haberse omitido en una corrida anterior. Se recomienda verificar.
+
+```json
+{"fecha":"2026-11-20","cves":[{"id":"CVE-2026-59310","producto":"VMware vCenter Server","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar vCenter a 9.1.1.0200 / 9.0.2.0200 / 8.0 U3m / 5.2.5.","runbook":"1) Inventariar instancias vCenter. 2) Parchear a version fija. 3) Revisar logs de Syslog service. 4) Buscar actividad de ransomware en VMs/ESXi.","epss":null,"iocs":["archivos cifrados en VMs/ESXi","procesos inusuales en ESXi","actividad anomala en Syslog service"],"sigma":"Regla Sigma: deteccion de patrones de acceso a archivos anormal en Syslog service de vCenter indicativos de directory traversal.","playbook":{"triage":["Verificar version vCenter instalada.","Revisar logs de Syslog service.","Buscar archivos cifrados o procesos inusuales en ESXi hosts."],"contencion":["Aislar vCenter de la red si se sospecha compromiso.","Deshabilitar acceso remoto innecesario.","Verificar integridad de backups de VMs."],"verificacion":["Confirmar version vCenter parcheada.","Validar ausencia de actividad anomala post-parche.","Auditar VMs y ESXi hosts."]}},{"id":"CVE-2026-129448","producto":"Apache Roller","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a Apache Roller 6.1.6 o deshabilitar XML-RPC.","runbook":"1) Inventariar instancias Apache Roller 4.0.0-6.1.5. 2) Actualizar a 6.1.6 o deshabilitar XML-RPC. 3) Revisar logs de /xmlrpc. 4) Buscar procesos hijo inesperados de JVM.","epss":null,"iocs":["requests HTTP POST a /xmlrpc con vendor extension types","procesos hijo inesperados de JVM de Roller"],"sigma":"Regla Sigma: deteccion de requests HTTP POST a endpoint XML-RPC de Apache Roller con vendor extension types sospechosos.","playbook":{"triage":["Verificar version Roller instalada.","Revisar logs de acceso a /xmlrpc.","Buscar procesos hijo inesperados de la JVM."],"contencion":["Actualizar a 6.1.6 o deshabilitar XML-RPC.","Implementar WAF con firmas.","Segmentar el servidor Roller."],"verificacion":["Confirmar version parcheada.","Validar ausencia de actividad anomala post-parche.","Auditar logs de acceso."]}},{"id":"CVE-2026-76466","producto":"Cisco Expressway Series","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a X15.5.20. Sin workaround disponible.","runbook":"1) Inventariar clustered Expressway-C/E devices. 2) Actualizar a X15.5.20. 3) Revisar logs de database service. 4) Buscar RPC commands anomalos.","epss":null,"iocs":["RPC commands anomalos al database service","accesos no autorizados a Expressway-C/E","procesos hijo inesperados"],"sigma":"Regla Sigma: deteccion de RPC commands anomalos al database service de Expressway indicativos de explotacion.","playbook":{"triage":["Inventariar clustered Expressway-C/E devices.","Verificar version instalada.","Revisar logs de database service."],"contencion":["Actualizar a X15.5.20.","Restringir acceso de red al database service.","Segmentar dispositivos Expressway."],"verificacion":["Confirmar version parcheada.","Validar ausencia de RPC commands anomalos post-parche.","Auditar accesos."]}},{"id":"CVE-2025-42884","producto":"SAP NetWeaver Enterprise Portal","cvss":6.5,"severidad":"Media","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Aplicar SAP Note 3660969.","runbook":"1) Inventariar SAP NetWeaver Enterprise Portal. 2) Aplicar SAP Note 3660969. 3) Revisar logs de portal para SQL injection. 4) Buscar errores SQL anomalos.","epss":null,"iocs":["requests HTTP con parametros SQL sospechosos en portal","errores SQL en logs del portal"],"sigma":"Regla Sigma: deteccion de requests HTTP a SAP NetWeaver Enterprise Portal con parametros SQL sospechosos.","playbook":{"triage":["Verificar version SAP NetWeaver EP instalada.","Revisar logs de portal para SQL injection.","Buscar errores SQL anomalos."],"contencion":["Aplicar SAP Note 3660969.","Restringir acceso al portal.","Segmentar el servidor SAP."],"verificacion":["Confirmar nota SAP aplicada.","Validar ausencia de SQL injection post-parche.","Auditar datos del portal."]}},{"id":"CVE-2026-19868","producto":"SonicWall SonicOS SSLVPN","cvss":null,"severidad":"Alta","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"KEV","parche":"Actualizar a 7.3.4-7013 / 8.2.3-8015.","runbook":"1) Inventariar firewalls SonicWall con SSLVPN. 2) Actualizar a 7.3.4-7013 / 8.2.3-8015. 3) Revisar logs de auth SSLVPN. 4) Buscar bypass de MFA.","epss":null,"iocs":["autenticaciones SSLVPN exitosas sin MFA","accesos a VPN desde IPs no reconocidas"],"sigma":"Regla Sigma: deteccion de autenticaciones SSLVPN que evaden controles SAML MFA.","playbook":{"triage":["Inventariar firewalls SonicWall con SSLVPN.","Verificar version SonicOS.","Revisar logs de auth SSLVPN."],"contencion":["Actualizar a 7.3.4-7013 / 8.2.3-8015.","Deshabilitar SSLVPN si no se usa.","Forzar MFA en todos los metodos de auth."],"verificacion":["Confirmar version parcheada.","Validar que MFA se aplique en todos los metodos.","Auditar accesos VPN."]}}],"otras_amenazas":[]}
+```
+
+---
+
+Ahora inserto esto en el documento. La entrada más reciente actual es del 18/11. Necesito poner la del 20/11 arriba.<|end|><|start|><|start|>assistant to=shell<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
+cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
+
+---
+
 # 🔴 Informe CTI Diario — 2026-11-18
 
 **Fecha del informe:** 19/11/2026  **Cobertura:** novedades del martes 18 de noviembre de 2026 (America/Santiago)
