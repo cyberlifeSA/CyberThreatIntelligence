@@ -1,3 +1,75 @@
+# ðŸ“Š Informe CTI Diario - 2026-11-21
+
+**Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sÃ¡bado 21 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catÃ¡logo de vulnerabilidades explotadas conocidas de CISA Â· CVSS = puntuaciÃ³n de severidad 0-10 Â· CWE = tipo de debilidad Â· PoC = prueba de concepto Â· EOL = fin de soporte Â· APT = actor de amenaza persistente avanzado Â· EPSS = probabilidad de explotaciÃ³n en 30 dÃ­as Â· RCE = ejecuciÃ³n remota de cÃ³digo Â· XML-RPC = protocolo de llamada a procedimiento remoto basado en XML Â· VPN = red privada virtual Â· MFA = autenticaciÃ³n multifactor Â· SAML = estÃ¡ndar de autenticaciÃ³n federada.
+**Leyenda de severidad:** ðŸ”´ CrÃ­tica (9-10) Â· ðŸŸ  Alta (7-8.9) Â· ðŸŸ¡ Media (4-6.9) Â· ðŸŸ¢ Baja (<4).
+
+> â„¹ï¸ **Resumen en 30 segundos:** CISA no aÃ±adiÃ³ nuevos CVEs al KEV el 21/11. Sin hallazgos crÃ­ticos nuevos ni PoC publicados ese dÃ­a. La prioridad sigue siendo cerrar los CVEs del 18/11 con deadline federal 23/11 (Synology DSM, LiteLLM, Apache Axis, REDCap, NGINX) y los del 20/11 (vCenter, Roller, Expressway, SAP, SonicWall).
+
+## 1. Turno de vigilancia â€” quÃ© atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | AcciÃ³n | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-59310 (VMware vCenter) | ðŸ”´ 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
+| 2 | CVE-2026-129448 (Apache Roller) | ðŸ”´ 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
+| 3 | CVE-2026-76466 (Cisco Expressway) | ðŸ”´ 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
+| 4 | CVE-2024-10441 (Synology DSM) | ðŸ”´ 9.8 | Parchear DSM. Ransomware C3RB3R activo. Deadline 23/11. | 1-2 h |
+| 5 | CVE-2026-123007 (NGINX) | ðŸ”´ 9.8 | Actualizar NGINX. PoC pÃºblico. | 30 min-1 h |
+
+### Prioridades
+
+| # | Prioridad | AcciÃ³n |
+|---|---|---|
+| 1 | ðŸ”´ P1 - Sin nuevos KEV el 21/11 | No hubo adiciones al KEV. Mantener foco en CVEs con deadline 23/11. |
+| 2 | ðŸŸ  P2 - vCenter / Roller / Expressway / Synology / NGINX | Cerrar parches antes del 23/11. Verificar inventario y estado de remediaciÃ³n. |
+| 3 | ðŸŸ¡ General | Vigilar NVD y KEV para nuevas adiciones; verificar Shadowserver para explotaciÃ³n en Internet de CVEs previos. |
+
+> â„¹ï¸ DÃ­a sin novedades crÃ­ticas nuevas. Vigilancia continua de CVEs previamente informados.
+
+## 2. Recomendaciones SOC L1
+
+1. ðŸ”´ **Prioridad 1 - Sin nuevos hallazgos:** no se requiere acciÃ³n nueva. Mantener remediaciÃ³n de CVEs con deadline 23/11.
+2. ðŸŸ  **Prioridad 2 - VerificaciÃ³n de inventario:** confirmar que vCenter, Roller, Expressway, Synology DSM y NGINX estÃ©n parcheados o en proceso.
+3. ðŸŸ¡ **General:** revisar logs de los sistemas afectados por CVEs previos; buscar IOCs conocidos (rutas webshell, hashes, IPs).
+
+## 3. Recomendaciones SOC L2
+
+1. ðŸŸ  **Hardening:** mantener segmentaciÃ³n de vCenter, deshabilitar XML-RPC en Roller si no se usa, restringir acceso a Expressway database service.
+2. ðŸŸ¡ **Threat hunting:** buscar actividad de ransomware C3RB3R en Synology DSM; buscar webshells en NGINX; buscar RPC anÃ³malos en Expressway.
+3. ðŸŸ¢ **Tuning de detecciones:** mantener reglas Sigma/YARA existentes; alertar ante nuevas adiciones KEV.
+4. ðŸŸ¢ **Mejoras de proceso:** documentar estado de remediaciÃ³n por CVE antes del deadline 23/11.
+
+## 4. Resumen ejecutivo
+
+- CISA no aÃ±adiÃ³ nuevos CVEs al KEV el 21/11.
+- No se detectaron PoC pÃºblicos nuevos ni explotaciÃ³n confirmada nueva ese dÃ­a.
+- La prioridad sigue siendo cerrar los CVEs del 18/11 y 20/11 con deadline federal 23/11.
+- Vigilancia continua de Shadowserver y VulnCheck KEV para nuevas seÃ±ales.
+
+## 5. Contexto de seguimiento
+
+- CVE-2024-10441 (Synology DSM) â€” KEV desde 18/11, deadline 23/11, ransomware C3RB3R. Sin cambios.
+- CVE-2026-123007 y hermanos (NGINX) â€” PoC pÃºblico. Sin cambios.
+- CVE-2026-59310 (VMware vCenter) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-129448 (Apache Roller) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-76466 (Cisco Expressway) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2025-42884 (SAP NetWeaver EP) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-19868 (SonicWall SonicOS) â€” KEV desde 06/11. Sin cambios.
+
+## 6. Cobertura y limitaciones
+
+- Fuentes consultadas: CISA KEV, NVD, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+- No se encontraron nuevas adiciones KEV el 21/11.
+- Algunos CVEs recientes pueden no tener EPSS disponible aÃºn.
+
+```json
+{"fecha":"2026-11-21","cves":[],"otras_amenazas":[]}
+```
+
+---
 # 🔴 Informe CTI Diario — 2026-11-20
 
 **Fecha del informe:** 21/11/2026  **Cobertura:** novedades del viernes 20 de noviembre de 2026 (America/Santiago)
