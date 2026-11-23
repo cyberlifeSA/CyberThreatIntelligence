@@ -1,3 +1,94 @@
+# 📡 Informe CTI Diario - 2026-11-22
+
+**Fecha del informe:** 23/11/2026  **Cobertura:** novedades del domingo 22 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · NTLM = protocolo de autenticación de Windows · SMB = protocolo de compartición de archivos.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> ⚡ **Resumen en 30 segundos:** CISA no añadió nuevos CVEs al KEV el 22/11. Se reporta por primera vez CVE-2026-124194 (Microsoft Outlook spoofing, CVSS 6.5, KEV, deadline federal 24/11) con explotación activa y fuga de hash NTLMv2. La prioridad sigue siendo cerrar los CVEs con deadline 23/11 (vCenter, Roller, Expressway, Synology, NGINX, SAP, SonicWall).
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
+| 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
+| 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
+| 4 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM. Ransomware C3RB3R activo. Deadline 23/11. | 1-2 h |
+| 5 | CVE-2026-123007 (NGINX) | 🔴 9.8 | Actualizar NGINX. PoC público. | 30 min-1 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - CVE-2026-124194 (Outlook) | Aplicar November 2026 Office updates. Deadline 24/11. Bloquear SMB/NTLM saliente. |
+| 2 | 🟠 P2 - CVEs deadline 23/11 | Cerrar vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
+| 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
+
+> ℹ️ Día sin nuevas adiciones al KEV. Se reporta CVE-2026-124194 por primera vez (KEV desde 10/11).
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 - Outlook (CVE-2026-124194):** aplicar updates de Office; alertar a usuarios no abrir archivos de mensaje inesperados; bloquear SMB/NTLM saliente a Internet.
+2. 🟠 **Prioridad 2 - Deadline 23/11:** verificar inventario y estado de parcheo de vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall.
+3. 🟡 **General:** revisar logs de sistemas afectados; buscar IOCs conocidos (webshells, hashes, IPs).
+
+## 3. Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** deshabilitar NTLM hacia Internet; restringir SMB saliente; segmentar vCenter.
+2. 🟠 **Threat hunting:** buscar conexiones SMB/NTLM anómalas desde endpoints; buscar webshells en NGINX; buscar RPC anómalos en Expressway.
+3. 🟡 **Tuning de detecciones:** alertar ante nuevas adiciones KEV; mantener reglas Sigma/YARA existentes.
+4. 🟡 **Mejoras de proceso:** documentar estado de remediación por CVE antes de deadlines 23/11 y 24/11.
+
+## 4. Resumen ejecutivo
+
+- CISA no añadió nuevos CVEs al KEV el 22/11.
+- Se reporta por primera vez CVE-2026-124194 (Outlook spoofing, CVSS 6.5, KEV, deadline 24/11) con explotación activa y fuga de hash NTLMv2.
+- La prioridad sigue siendo cerrar los CVEs con deadline federal 23/11.
+- Vigilancia continua de Shadowserver y VulnCheck KEV para nuevos indicadores.
+
+## 5. Hallazgos
+
+### En simple
+CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes de acciones inseguras. Un atacante envía un archivo de mensaje manipulado que, al abrirse, hace que Outlook se conecte a un servidor controlado por el atacante sin mostrar la advertencia habitual, filtrando el hash NTLMv2 del usuario. Microsoft lo corrigió en el Patch Tuesday de noviembre de 2026; CISA lo incluyó en KEV con deadline 24/11.
+
+### Detalle técnico
+- **CVE:** CVE-2026-124194
+- **CVSS:** 6.5 (Media, CVSSv3)
+- **CWE:** CWE-356
+- **Producto:** Microsoft 365 Apps for Enterprise; Office LTSC 2021 (< build 16.0.14334.21048); Office LTSC 2024 (< build 16.0.17932.21140)
+- **Técnica MITRE ATT&CK:** T1557 (Adversary-in-the-Middle) / T1187 (Forced Authentication); MITRE no documenta una técnica única para este vector específico.
+- **Explotación:** KEV (añadido 10/11/2026), explotado en la calle. Código de exploit maduro (exploit code maturity "High").
+- **Impacto:** filtración de hash NTLMv2 del usuario, posible suplantación/autenticación como el usuario. Preview Pane no es vector de ataque.
+- **Mitigaciones/Parches:** instalar updates de noviembre 2026 de Office; builds 16.0.14334.21048 / 16.0.17932.21140. Bloquear SMB y NTLM saliente a Internet. No abrir archivos de mensaje inesperados.
+- **EPSS:** 1.9% (30 días)
+- **IOCs:** No publicados por Microsoft.
+- **Sigma/YARA:** Detección de conexiones SMB/NTLM salientes inusuales desde procesos de Outlook; regla genérica de forced authentication.
+- **Playbook:**
+  - Triage: verificar versión de Office instalada; confirmar si el usuario abrió archivos de mensaje inesperados; buscar conexiones SMB salientes.
+  - Contención: aplicar parche; bloquear SMB/NTLM saliente; aislar endpoints sospechosos.
+  - Verificación: confirmar build de Office; revisar logs de firewall/proxy; validar que no haya hashes NTLM filtrados.
+
+## 6. Contexto de seguimiento
+- CVE-2026-59310 (vCenter): sin cambios, deadline 23/11.
+- CVE-2026-129448 (Roller): sin cambios, deadline 23/11.
+- CVE-2026-76466 (Expressway): sin cambios, deadline 23/11.
+- CVE-2024-10441 (Synology DSM): sin cambios, deadline 23/11.
+- CVE-2026-123007 (NGINX): sin cambios.
+- CVE-2025-42884 (SAP NetWeaver): sin cambios, deadline 23/11.
+- CVE-2026-19868 (SonicWall): sin cambios.
+
+## 7. Cobertura y limitaciones
+- Fuentes consultadas: CISA KEV, NVD, securityonline.info, Microsoft MSRC. No se encontraron nuevas adiciones KEV el 22/11.
+- Datos de EPSS e IOCs parciales (Microsoft no publicó IOCs para CVE-2026-124194).
+- Posibles CVEs no incluidos si no aparecieron en fuentes priorizadas.
+
+```json
+{"fecha":"2026-11-22","cves":[{"id":"CVE-2026-124194","producto":"Microsoft Outlook / Microsoft 365 Apps","cvss":6.5,"severidad":"Media","mitre":{"id":"T1187","nombre":"Forced Authentication"},"explotacion":"KEV","parche":"Instalar updates de noviembre 2026 de Office (builds 16.0.14334.21048 / 16.0.17932.21140)","runbook":"1) Verificar versión de Office instalada. 2) Aplicar parche. 3) Bloquear SMB/NTLM saliente. 4) Revisar logs de conexiones SMB anómalas.","epss":0.019,"iocs":[],"sigma":"Detección de conexiones SMB/NTLM salientes inusuales desde procesos de Outlook","playbook":{"triage":["Verificar versión de Office","Confirmar si el usuario abrió archivos de mensaje inesperados","Buscar conexiones SMB salientes"],"contencion":["Aplicar parche","Bloquear SMB/NTLM saliente","Aislar endpoints sospechosos"],"verificacion":["Confirmar build de Office","Revisar logs de firewall/proxy","Validar que no haya hashes NTLM filtrados"]}}],"otras_amenazas":[]}
+```
+
 # ðŸ“Š Informe CTI Diario - 2026-11-21
 
 **Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sÃ¡bado 21 de noviembre de 2026 (America/Santiago)
