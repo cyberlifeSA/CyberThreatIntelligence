@@ -11,27 +11,7 @@
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 1 | CVE-2026-134624 (N-able MailAssure) | 🔴 9.3 | Actualizar a 20261121.1943. Rotar credenciales/API tokens. | 30 min-1 h |
 | 2 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11 vencida. | 1-2 h |
 | 3 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11 vencida. | 30 min-1 h |
@@ -41,19 +21,7 @@
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - CVE-2026-134624 (N-able MailAssure) | Actualizar Mail Assure/SpamExperts a 20261121.1943; rotar credenciales y tokens API/OAuth; revisar logs de LDAP sync connection check. |
 | 2 | 🟠 P2 - CVEs deadline 23/11 | Verificar cierre de vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
 | 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
@@ -138,27 +106,7 @@ CVE-2026-134624 es una falla SSRF (falsificación de solicitud del lado del serv
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
@@ -168,19 +116,7 @@ CVE-2026-134624 es una falla SSRF (falsificación de solicitud del lado del serv
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - CVE-2026-124194 (Outlook) | Aplicar November 2026 Office updates. Deadline 24/11. Bloquear SMB/NTLM saliente. |
 | 2 | 🟠 P2 - CVEs deadline 23/11 | Cerrar vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
 | 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
@@ -334,27 +270,7 @@ Informe CTI Diario — 2026-11-20
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter a 9.1.1.0200/9.0.2.0200/8.0 U3m/5.2.5. Ransomware activo. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Pre-auth RCE. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Creds hard-coded en DB service. RCE root. | 1-2 h |
@@ -364,19 +280,7 @@ Informe CTI Diario — 2026-11-20
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - VMware vCenter (CVE-2026-59310, 9.8, KEV) | Parchear vCenter a 9.1.1.0200 / 9.0.2.0200 / 8.0 U3m / 5.2.5. Directory traversal en Syslog → RCE. Ataque activo por actor China-nexus desplegando ransomware. Deadline federal 23/11. |
 | 2 | 🔴 P2 - Apache Roller (CVE-2026-129448, 9.8, KEV) | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Deserialización pre-auth en XML-RPC endpoint. Explotación activa confirmada. Deadline federal 23/11. |
 | 3 | 🔴 P3 - Cisco Expressway (CVE-2026-76466, 9.8, KEV) | Actualizar a X15.5.20. Credenciales hard-coded en database service de clustered Expressway-C/E. RCE como root sin auth. Deadline federal 23/11. |
@@ -425,27 +329,7 @@ Informe CTI Diario — 2026-11-20
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🔴 CVE-2026-59310 | 9.8 (v3) | VMware vCenter | Directory traversal en Syslog → RCE. Ransomware activo. | - |
 | 🔴 CVE-2026-129448 | 9.8 (v3) | Apache Roller | Deserialización XML-RPC pre-auth → RCE. | - |
 | 🔴 CVE-2026-76466 | 9.8 (v3) | Cisco Expressway | Creds hard-coded en DB service → RCE root. | - |
@@ -580,27 +464,7 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 1 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM; si no es posible, aislar del Internet. Ransomware C3RB3R activo. | 1-2 h |
 | 2 | CVE-2026-123007 (NGINX HTTP/2) | 🔴 9.2 | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2. PoC público. | 30 min-1 h |
 | 3 | CVE-2026-90817 (REDCap) | 🔴 ~9.8 | Actualizar a 16.0.49/17.3.10/17.4.4. RCE unauth. | 1-2 h |
@@ -610,19 +474,7 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - Synology DSM (CVE-2024-10441, 9.8, KEV) | Parchear DSM a la versión fija; si no es posible, aislar del Internet. Ransomware C3RB3R desplegándose contra NAS sin parchear. Deadline federal 21/11. |
 | 2 | 🔴 P2 - NGINX (CVE-2026-123007 y hermanos, 9.2, PoC público) | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2 como mitigación temporal. PoC público en GitHub; explotación confirmada en cloud. |
 | 3 | 🔴 P3 - REDCap (CVE-2026-90817, ~9.8, KEV) | Actualizar a 16.0.49 / 17.3.10 / 17.4.4. RCE unauth con hash de encuesta pública. Deadline federal 21/11. |
@@ -669,27 +521,7 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🔴 CVE-2024-10441 | 9.8 (v3) | Synology DSM | RCE via improper encoding en system plugin daemon → C3RB3R ransomware | - |
 | 🔴 CVE-2026-90817 | ~9.8 (v3) | REDCap | RCE unauth via survey passthrough routing + Data Import | - |
 | 🔴 CVE-2026-90436 | Crítico (v3) | Apache Axis 1.x | RCE unauth via unsafe reflection (CWE-470) en SOAP fault handling | - |
@@ -814,19 +646,7 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 — Perforce Puppet Enterprise (CVE-2026-115731, 9.4, KEV) | Parchear a PE 2026.0.1 / 2025.12.1 / 2023.8.13 (o Puppet Core 9.1.3/8.22.2) y reiniciar Puppet Server; revisar autosigning y certificados emitidos. Deadline federal 01/12. |
 | 2 | 🔴 P2 — Check Point Gaia / UnrealIRCd | Vencimiento federal 16/11 ya cumplido; si algún gateway/servidor sigue sin parchear, asumir compromiso y cazar IOCs. |
 | 3 | 🟠 P3 — Dispositivos EOL (D-Link, DrayTek) | CVEs críticos 9.9-10.0 sin parche confirmado; aislar o reemplazar. |
@@ -868,27 +688,7 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🔴 CVE-2026-115731 | 9.4 (CVSS 4.0) | Perforce Puppet Enterprise | Deserialización de datos no confiables en el procesamiento de reportes → RCE como usuario del Puppet Server | — |
 
 > ℹ️ CISA no nombró atacante ni publicó IOCs. El listing confirma explotación activa; el alcance real se desconoce.
@@ -947,19 +747,7 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 — Check Point Gaia / UnrealIRCd | Vencimiento federal **16/11**. Verificar parche aplicado; si no, asumir compromiso y cazar IOCs (webshells TSGA/TSProxy, `/tmp/dynamic_socket`, `destroy_v6`). |
 | 2 | 🔴 P2 — ConnectWise ScreenConnect (CVE-2026-84869, 9.9) | Reportado como KEV el 16/11 por fuentes de terceros. Verificar versión del servidor y parchear de inmediato. |
 | 3 | 🔴 P3 — D-Link DSL-6740C (CVE-2026-129444, 10.0) | Creds hard-coded en FTP, PoC público, producto EOL. Aislar del Internet o reemplazar. |
@@ -1007,27 +795,7 @@ echo done
 ### 4.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🔴 CVE-2026-84869 | 9.9 | ConnectWise ScreenConnect | RCE sin autenticación (marcado KEV por terceros el 16/11) | — |
 | 🔴 CVE-2026-90436 | 9.8 | Apache Axis 1.x / N-able N-central | RCE sin autenticación, explotado en la calle | — |
 | 🟠 CVE-2026-111560 | 7.2 | Barracuda (OS command injection) | KEV (reportado por terceros) | — |
@@ -1037,23 +805,7 @@ echo done
 ### 4.2 CVEs críticos publicados el 16/11 (sin KEV confirmado)
 
 | CVE | CVSS | Producto | Impacto |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|
 | 🔴 CVE-2026-93664 | 10.0 | Dassault Systèmes 3DEXPERIENCE (Station Launcher App) | Deserialización no confiable → RCE sin autenticación |
 | 🔴 CVE-2026-129444 | 10.0 | D-Link DSL-6740C | Creds hard-coded en FTP, PoC público, producto EOL |
 | 🔴 CVE-2026-129449 | 9.9 | DrayTek Vigor2960 | Heap overflow en mainfunction.cgi, PoC público, fix 1.5.1.7 |
@@ -1129,19 +881,7 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - Check Point Gaia / UnrealIRCd | Vencimiento federal **16/11**. Verificar parche aplicado; si no, asumir compromiso y cazar IOCs. |
 | 2 | 🟠 P2 - Windows Patch Tuesday (LDAP/Schannel/CredSSP/IIS/MSMQ) | CVE-2026-119958 LDAP (9.8) y otros RCEs sin KEV pero red-reachables. Parchear DCs y servidores expuestos en este ciclo. |
 | 3 | 🟠 P3 - Dispositivos EOL (D-Link, DrayTek) | CVEs críticos 9.9-10.0 en routers EOL/sin soporte. Inventariar y reemplazar o segmentar. |
@@ -1185,27 +925,7 @@ echo done
 ### 4.1 CVEs críticos de Windows (Patch Tuesday)
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🟠 CVE-2026-119958 | 9.8 | Windows LDAP | RCE sin autenticación sobre DCs | 1.3% |
 | 🟠 CVE-2026-119952 | 8.1 | Schannel (TLS) | RCE sin autenticación, alta complejidad | 0.9% |
 | 🟠 CVE-2026-119962 | 8.1 | CredSSP (RDP) | Double free, alta complejidad | 0.9% |
@@ -1219,23 +939,7 @@ echo done
 ### 4.2 Dispositivos de borde EOL / críticos
 
 | CVE | CVSS | Producto | Impacto |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|
 | 🔴 CVE-2026-129353 | 10.0 | D-Link DIR-600L | Stack overflow en authentication.cgi |
 | 🔴 CVE-2026-129354 | 10.0 | D-Link DIR-600L | Stack overflow en HNAP cgibin |
 | 🔴 CVE-2026-129444 | 10.0 | D-Link DSL-6740C | Credenciales hard-coded en FTP daemon |
@@ -1248,23 +952,7 @@ echo done
 ### 4.3 WordPress plugins críticos
 
 | CVE | CVSS | Plugin | Impacto |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|
 | 🔴 CVE-2026-122662 | 9.8 | Document Library Pro | PHP Object Injection |
 | 🔴 CVE-2026-125769 | 9.8 | Advanced Form Integration | Privilege Escalation |
 | 🔴 CVE-2026-125795 | 9.8 | Estatik | Local File Inclusion |
@@ -1305,19 +993,7 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 — Check Point Gaia / UnrealIRCd | Siguen en KEV, vencimiento federal **16/11**. Parchear antes de esa fecha. |
 | 2 | 🟠 P2 — 5 CVEs nuevos del 14/11 | TRENDnet EOL, Shipo, Dokploy, Fluent Forms, AutomatorWP. Sin explotación: inventario y parcheo rutinario. |
 | 3 | 🟡 Pendiente | Análisis de avisos ICS CISA ICSA-26-316-01/02/03 (Siemens, Node.js/PHP2Shell). |
@@ -1347,27 +1023,7 @@ echo done
 ## 4. Novedades del 14/11 sin explotación confirmada (vigilancia)
 
 | CVE | CVSS | Producto | Impacto | Notas |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 🔴 CVE-2026-129351 | Crítica | TRENDnet TEW-657BRM (mini_httpd) | Out-of-bounds write remoto, sin autenticación | Producto EOL; fabricante no confirma la vulnerabilidad |
 | 🔴 CVE-2026-19907 | Crítica | Plugin WordPress "Shipo" | Bypass de autenticación → impersonación de admin vía REST API | Sin explotación confirmada |
 | 🔴 CVE-2026-129433 | Crítica | Dokploy | Inyección de comandos OS como root vía backup (nombre de servicio) | Requiere usuario autenticado |
@@ -1409,19 +1065,7 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 — Check Point Gaia | Inventariar gateways Gaia (versión y take del Jumbo); parchear a los takes indicados o aplicar la mitigación de `dynamic_server`. Cazar: `/tmp/dynamic_socket` con permisos 0777, comandos en `dynamicCli.log` sin wrapper Clish, webshells en plantillas de login del portal, conexiones desde `130.94.19[.]204`, procesos inusuales en hosts ESXi. |
 | 2 | 🔴 P1 — UnrealIRCd | Si hay servidores IRC internos/externos, verificar 6.2.7.1 o hot-patch `bundle-20261107`. |
 | 3 | 🟠 P2 — Outlook | Confirmar despliegue del parche de noviembre y reglas de bloqueo de NTLM saliente; alertar sobre tráfico hacia servidores externos con auth NTLM tras apertura de adjuntos .msg. |
@@ -1481,23 +1125,7 @@ echo done
 ## 5. Novedades del 13/11 sin explotación confirmada (vigilancia)
 
 | CVE | CVSS | Producto | Impacto |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|
 | 🔴 CVE-2026-124002 | 9.3 | XWEB EVO 5.2.3–5.7.0 | Inyección de comandos OS pre-autenticación |
 | 🔴 CVE-2026-124010 | 9.3 | XWEB EVO < 5.6.2 | Inyección de comandos pre-autenticación |
 | 🔴 CVE-2026-124006 | 9.2 | XWEB EVO ≤ 5.8.8 | Generación de credenciales predecible → credenciales root Linux derivables |

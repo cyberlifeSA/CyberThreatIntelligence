@@ -18,27 +18,7 @@
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|
 | 1 | CVE-2026-59310 / CVE-2026-123890 (VMware vCenter) | 🔴 9.8/10.0 | Parchear vCenter. Deadline 23/11. Ransomware activo. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6 o deshabilitar XML-RPC. Deadline 23/11. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Creds hard-coded. Deadline 23/11. | 1-2 h |
@@ -48,23 +28,7 @@
 ### Vista rápida (CVE → severidad → estado → acción)
 
 | CVE | Severidad | Estado | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|
 | CVE-2026-59310 (vCenter) | 🔴 9.8 | KEV, deadline 23/11 | Parchear vCenter |
 | CVE-2026-123890 (vCenter auth bypass) | 🔴 10.0 | KEV, deadline 23/11 | Parchear vCenter (VMSA-2026-0006.1) |
 | CVE-2026-129448 (Roller) | 🔴 9.8 | KEV, deadline 23/11 | Actualizar a 6.1.6 |
@@ -83,19 +47,7 @@
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|
 | 1 | 🔴 P1 - vCenter (CVE-2026-59310 + CVE-2026-123890) | Parchear vCenter a 9.1.1.0200/9.0.2.0200/8.0 U3m/5.2.5 (VMSA-2026-0006.1). Directory traversal en Syslog + auth bypass en VMware Directory Service. Ransomware activo por actor China-nexus. Deadline federal 23/11. |
 | 2 | 🔴 P2 - Apache Roller (CVE-2026-129448) | Actualizar a 6.1.6 o deshabilitar XML-RPC. Deserialización pre-auth en XML-RPC. Explotación activa. Deadline federal 23/11. |
 | 3 | 🔴 P3 - Cisco Expressway (CVE-2026-76466) | Actualizar a X15.5.20. Credenciales hard-coded en database service de clustered devices. RCE como root. Deadline federal 23/11. |
@@ -395,35 +347,7 @@
 ## 9. Tabla comparativa
 
 | CVE | CVSS | Severidad | Explotación | EPSS | Estado | Acción |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
+|---|---|---|---|---|---|---|
 | CVE-2026-123890 (vCenter auth bypass) | 10.0 | 🔴 Crítica | KEV | N/D | Abierto | Parchear vCenter (VMSA-2026-0006.1) |
 | CVE-2026-59310 (vCenter Syslog) | 9.8 | 🔴 Crítica | KEV | N/D | Abierto | Parchear vCenter |
 | CVE-2026-129448 (Roller) | 9.8 | 🔴 Crítica | KEV | N/D | Abierto | Actualizar a 6.1.6 |
