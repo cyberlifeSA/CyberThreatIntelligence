@@ -249,80 +249,48 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 {"fecha":"2026-11-22","cves":[{"id":"CVE-2026-124194","producto":"Microsoft Outlook / Microsoft 365 Apps","cvss":6.5,"severidad":"Media","mitre":{"id":"T1187","nombre":"Forced Authentication"},"explotacion":"KEV","parche":"Instalar updates de noviembre 2026 de Office (builds 16.0.14334.21048 / 16.0.17932.21140)","runbook":"1) Verificar versión de Office instalada. 2) Aplicar parche. 3) Bloquear SMB/NTLM saliente. 4) Revisar logs de conexiones SMB anómalas.","epss":0.019,"iocs":[],"sigma":"Detección de conexiones SMB/NTLM salientes inusuales desde procesos de Outlook","playbook":{"triage":["Verificar versión de Office","Confirmar si el usuario abrió archivos de mensaje inesperados","Buscar conexiones SMB salientes"],"contencion":["Aplicar parche","Bloquear SMB/NTLM saliente","Aislar endpoints sospechosos"],"verificacion":["Confirmar build de Office","Revisar logs de firewall/proxy","Validar que no haya hashes NTLM filtrados"]}}],"otras_amenazas":[]}
 ```
 
-# ðŸ“Š Informe CTI Diario - 2026-11-21
+# # 📡 Informe CTI Diario - 2026-11-21
 
 **Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sábado 21 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Leyenda de severidad:** ðŸ”´ Crítica (9-10) Â· ðŸŸ  Alta (7-8.9) Â· ðŸŸ¡ Media (4-6.9) Â· ðŸŸ¢ Baja (<4).
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
-> ℹï¸ **Resumen en 30 segundos:** CISA no añadió nuevos CVEs al KEV el 21/11. Sin hallazgos críticos nuevos ni PoC publicados ese día. La prioridad sigue siendo cerrar los CVEs del 18/11 con deadline federal 23/11 (Synology DSM, LiteLLM, Apache Axis, REDCap, NGINX) y los del 20/11 (vCenter, Roller, Expressway, SAP, SonicWall).
+> ℹ️ **Resumen en 30 segundos:** CISA no añadió nuevos CVEs al KEV el 21/11. Sin hallazgos críticos nuevos ni PoC publicados ese día. La prioridad sigue siendo cerrar los CVEs del 18/11 con deadline federal 23/11 (Synology DSM, LiteLLM, Apache Axis, REDCap, NGINX) y los del 20/11 (vCenter, Roller, Expressway, SAP, SonicWall).
 
 ## 1. Turno de vigilancia — qué atender primero
 
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-
----
-
-|
-| 1 | CVE-2026-59310 (VMware vCenter) | ðŸ”´ 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
-| 2 | CVE-2026-129448 (Apache Roller) | ðŸ”´ 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
-| 3 | CVE-2026-76466 (Cisco Expressway) | ðŸ”´ 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
-| 4 | CVE-2024-10441 (Synology DSM) | ðŸ”´ 9.8 | Parchear DSM. Ransomware C3RB3R activo. Deadline 23/11. | 1-2 h |
-| 5 | CVE-2026-123007 (NGINX) | ðŸ”´ 9.8 | Actualizar NGINX. PoC público. | 30 min-1 h |
+|---|---|---|---|---|
+| 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
+| 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
+| 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
+| 4 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM. Ransomware C3RB3R activo. Deadline 23/11. | 1-2 h |
+| 5 | CVE-2026-123007 (NGINX) | 🔴 9.8 | Actualizar NGINX. PoC público. | 30 min-1 h |
 
 ### Prioridades
 
 | # | Prioridad | Acción |
-|
+|---|---|---|
+| 1 | 🔴 P1 - Sin nuevos KEV el 21/11 | No hubo adiciones al KEV. Mantener foco en CVEs con deadline 23/11. |
+| 2 | 🟠 P2 - vCenter / Roller / Expressway / Synology / NGINX | Cerrar parches antes del 23/11. Verificar inventario y estado de remediación. |
+| 3 | 🟡 General | Vigilar NVD y KEV para nuevas adiciones; verificar Shadowserver para explotación en Internet de CVEs previos. |
 
----
-
-|
-
----
-
-|
-
----
-
-|
-| 1 | ðŸ”´ P1 - Sin nuevos KEV el 21/11 | No hubo adiciones al KEV. Mantener foco en CVEs con deadline 23/11. |
-| 2 | ðŸŸ  P2 - vCenter / Roller / Expressway / Synology / NGINX | Cerrar parches antes del 23/11. Verificar inventario y estado de remediación. |
-| 3 | ðŸŸ¡ General | Vigilar NVD y KEV para nuevas adiciones; verificar Shadowserver para explotación en Internet de CVEs previos. |
-
-> ℹï¸ Día sin novedades críticas nuevas. Vigilancia continua de CVEs previamente informados.
+> ℹ️ Día sin novedades críticas nuevas. Vigilancia continua de CVEs previamente informados.
 
 ## 2. Recomendaciones SOC L1
 
-1. ðŸ”´ **Prioridad 1 - Sin nuevos hallazgos:** no se requiere acción nueva. Mantener remediación de CVEs con deadline 23/11.
-2. ðŸŸ  **Prioridad 2 - Verificación de inventario:** confirmar que vCenter, Roller, Expressway, Synology DSM y NGINX estén parcheados o en proceso.
-3. ðŸŸ¡ **General:** revisar logs de los sistemas afectados por CVEs previos; buscar IOCs conocidos (rutas webshell, hashes, IPs).
+1. 🔴 **Prioridad 1 - Sin nuevos hallazgos:** no se requiere acción nueva. Mantener remediación de CVEs con deadline 23/11.
+2. 🟠 **Prioridad 2 - Verificación de inventario:** confirmar que vCenter, Roller, Expressway, Synology DSM y NGINX estén parcheados o en proceso.
+3. 🟡 **General:** revisar logs de los sistemas afectados por CVEs previos; buscar IOCs conocidos (rutas webshell, hashes, IPs).
 
 ## 3. Recomendaciones SOC L2
 
-1. ðŸŸ  **Hardening:** mantener segmentación de vCenter, deshabilitar XML-RPC en Roller si no se usa, restringir acceso a Expressway database service.
-2. ðŸŸ¡ **Threat hunting:** buscar actividad de ransomware C3RB3R en Synology DSM; buscar webshells en NGINX; buscar RPC anómalos en Expressway.
-3. ðŸŸ¢ **Tuning de detecciones:** mantener reglas Sigma/YARA existentes; alertar ante nuevas adiciones KEV.
-4. ðŸŸ¢ **Mejoras de proceso:** documentar estado de remediación por CVE antes del deadline 23/11.
+1. 🟠 **Hardening:** mantener segmentación de vCenter, deshabilitar XML-RPC en Roller si no se usa, restringir acceso a Expressway database service.
+2. 🟡 **Threat hunting:** buscar actividad de ransomware C3RB3R en Synology DSM; buscar webshells en NGINX; buscar RPC anómalos en Expressway.
+3. 🟢 **Tuning de detecciones:** mantener reglas Sigma/YARA existentes; alertar ante nuevas adiciones KEV.
+4. 🟢 **Mejoras de proceso:** documentar estado de remediación por CVE antes del deadline 23/11.
 
 ## 4. Resumen ejecutivo
 
@@ -353,7 +321,7 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 
 ---
 
-# 🔴 Informe CTI Diario — 2026-11-20
+Informe CTI Diario — 2026-11-20
 
 **Fecha del informe:** 21/11/2026  **Cobertura:** novedades del viernes 20 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
