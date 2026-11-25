@@ -183,7 +183,7 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 {"fecha":"2026-11-22","cves":[{"id":"CVE-2026-124194","producto":"Microsoft Outlook / Microsoft 365 Apps","cvss":6.5,"severidad":"Media","mitre":{"id":"T1187","nombre":"Forced Authentication"},"explotacion":"KEV","parche":"Instalar updates de noviembre 2026 de Office (builds 16.0.14334.21048 / 16.0.17932.21140)","runbook":"1) Verificar versión de Office instalada. 2) Aplicar parche. 3) Bloquear SMB/NTLM saliente. 4) Revisar logs de conexiones SMB anómalas.","epss":0.019,"iocs":[],"sigma":"Detección de conexiones SMB/NTLM salientes inusuales desde procesos de Outlook","playbook":{"triage":["Verificar versión de Office","Confirmar si el usuario abrió archivos de mensaje inesperados","Buscar conexiones SMB salientes"],"contencion":["Aplicar parche","Bloquear SMB/NTLM saliente","Aislar endpoints sospechosos"],"verificacion":["Confirmar build de Office","Revisar logs de firewall/proxy","Validar que no haya hashes NTLM filtrados"]}}],"otras_amenazas":[]}
 ```
 
-# # 📡 Informe CTI Diario - 2026-11-21
+# 📡 Informe CTI Diario - 2026-11-21
 
 **Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sábado 21 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
