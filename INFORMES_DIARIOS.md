@@ -2,7 +2,6 @@
 
 **Fecha del informe:** 24/11/2026  **Cobertura:** novedades del lunes 23 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · SSRF = falsificación de solicitud del lado del servidor · LDAP = protocolo de acceso a directorios ligeros · MSP = proveedor de servicios gestionados · DFIR = respuesta a incidentes digitales y forense.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > ⚡ **Resumen en 30 segundos:** CISA añadió 1 CVE al KEV el 23/11: CVE-2026-134624 (N-able MailAssure/SpamExperts SSRF, CVSS 9.3), descubierto durante un breach activo en la nube de N-able. Parche disponible (versión 20261121.1943). MSPs y usuarios de Mail Assure deben actualizar ya y rotar credenciales.
@@ -12,7 +11,27 @@
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | CVE-2026-134624 (N-able MailAssure) | 🔴 9.3 | Actualizar a 20261121.1943. Rotar credenciales/API tokens. | 30 min-1 h |
 | 2 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11 vencida. | 1-2 h |
 | 3 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11 vencida. | 30 min-1 h |
@@ -22,7 +41,19 @@
 ### Prioridades
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 - CVE-2026-134624 (N-able MailAssure) | Actualizar Mail Assure/SpamExperts a 20261121.1943; rotar credenciales y tokens API/OAuth; revisar logs de LDAP sync connection check. |
 | 2 | 🟠 P2 - CVEs deadline 23/11 | Verificar cierre de vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
 | 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
@@ -100,7 +131,6 @@ oldString">
 
 **Fecha del informe:** 23/11/2026  **Cobertura:** novedades del domingo 22 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · NTLM = protocolo de autenticación de Windows · SMB = protocolo de compartición de archivos.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > ⚡ **Resumen en 30 segundos:** CISA no añadió nuevos CVEs al KEV el 22/11. Se reporta por primera vez CVE-2026-124194 (Microsoft Outlook spoofing, CVSS 6.5, KEV, deadline federal 24/11) con explotación activa y fuga de hash NTLMv2. La prioridad sigue siendo cerrar los CVEs con deadline 23/11 (vCenter, Roller, Expressway, Synology, NGINX, SAP, SonicWall).
@@ -110,7 +140,27 @@ oldString">
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
@@ -120,7 +170,19 @@ oldString">
 ### Prioridades
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 - CVE-2026-124194 (Outlook) | Aplicar November 2026 Office updates. Deadline 24/11. Bloquear SMB/NTLM saliente. |
 | 2 | 🟠 P2 - CVEs deadline 23/11 | Cerrar vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
 | 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
@@ -189,81 +251,112 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 
 # ðŸ“Š Informe CTI Diario - 2026-11-21
 
-**Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sÃ¡bado 21 de noviembre de 2026 (America/Santiago)
+**Fecha del informe:** 22/11/2026  **Cobertura:** novedades del sábado 21 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catÃ¡logo de vulnerabilidades explotadas conocidas de CISA Â· CVSS = puntuaciÃ³n de severidad 0-10 Â· CWE = tipo de debilidad Â· PoC = prueba de concepto Â· EOL = fin de soporte Â· APT = actor de amenaza persistente avanzado Â· EPSS = probabilidad de explotaciÃ³n en 30 dÃ­as Â· RCE = ejecuciÃ³n remota de cÃ³digo Â· XML-RPC = protocolo de llamada a procedimiento remoto basado en XML Â· VPN = red privada virtual Â· MFA = autenticaciÃ³n multifactor Â· SAML = estÃ¡ndar de autenticaciÃ³n federada.
-**Leyenda de severidad:** ðŸ”´ CrÃ­tica (9-10) Â· ðŸŸ  Alta (7-8.9) Â· ðŸŸ¡ Media (4-6.9) Â· ðŸŸ¢ Baja (<4).
+**Leyenda de severidad:** ðŸ”´ Crítica (9-10) Â· ðŸŸ  Alta (7-8.9) Â· ðŸŸ¡ Media (4-6.9) Â· ðŸŸ¢ Baja (<4).
 
-> â„¹ï¸ **Resumen en 30 segundos:** CISA no aÃ±adiÃ³ nuevos CVEs al KEV el 21/11. Sin hallazgos crÃ­ticos nuevos ni PoC publicados ese dÃ­a. La prioridad sigue siendo cerrar los CVEs del 18/11 con deadline federal 23/11 (Synology DSM, LiteLLM, Apache Axis, REDCap, NGINX) y los del 20/11 (vCenter, Roller, Expressway, SAP, SonicWall).
+> ℹï¸ **Resumen en 30 segundos:** CISA no añadió nuevos CVEs al KEV el 21/11. Sin hallazgos críticos nuevos ni PoC publicados ese día. La prioridad sigue siendo cerrar los CVEs del 18/11 con deadline federal 23/11 (Synology DSM, LiteLLM, Apache Axis, REDCap, NGINX) y los del 20/11 (vCenter, Roller, Expressway, SAP, SonicWall).
 
-## 1. Turno de vigilancia â€” quÃ© atender primero
+## 1. Turno de vigilancia — qué atender primero
 
 ### Top 5 atacar hoy
 
-| # | CVE | Severidad | AcciÃ³n | Tiempo est. |
-|---|---|---|---|---|
+| # | CVE | Severidad | Acción | Tiempo est. |
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | CVE-2026-59310 (VMware vCenter) | ðŸ”´ 9.8 | Parchear vCenter. Deadline 23/11. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | ðŸ”´ 9.8 | Actualizar a 6.1.6. Deadline 23/11. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | ðŸ”´ 9.8 | Actualizar a X15.5.20. Deadline 23/11. | 1-2 h |
 | 4 | CVE-2024-10441 (Synology DSM) | ðŸ”´ 9.8 | Parchear DSM. Ransomware C3RB3R activo. Deadline 23/11. | 1-2 h |
-| 5 | CVE-2026-123007 (NGINX) | ðŸ”´ 9.8 | Actualizar NGINX. PoC pÃºblico. | 30 min-1 h |
+| 5 | CVE-2026-123007 (NGINX) | ðŸ”´ 9.8 | Actualizar NGINX. PoC público. | 30 min-1 h |
 
 ### Prioridades
 
-| # | Prioridad | AcciÃ³n |
-|---|---|---|
-| 1 | ðŸ”´ P1 - Sin nuevos KEV el 21/11 | No hubo adiciones al KEV. Mantener foco en CVEs con deadline 23/11. |
-| 2 | ðŸŸ  P2 - vCenter / Roller / Expressway / Synology / NGINX | Cerrar parches antes del 23/11. Verificar inventario y estado de remediaciÃ³n. |
-| 3 | ðŸŸ¡ General | Vigilar NVD y KEV para nuevas adiciones; verificar Shadowserver para explotaciÃ³n en Internet de CVEs previos. |
+| # | Prioridad | Acción |
+|
 
-> â„¹ï¸ DÃ­a sin novedades crÃ­ticas nuevas. Vigilancia continua de CVEs previamente informados.
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+| 1 | ðŸ”´ P1 - Sin nuevos KEV el 21/11 | No hubo adiciones al KEV. Mantener foco en CVEs con deadline 23/11. |
+| 2 | ðŸŸ  P2 - vCenter / Roller / Expressway / Synology / NGINX | Cerrar parches antes del 23/11. Verificar inventario y estado de remediación. |
+| 3 | ðŸŸ¡ General | Vigilar NVD y KEV para nuevas adiciones; verificar Shadowserver para explotación en Internet de CVEs previos. |
+
+> ℹï¸ Día sin novedades críticas nuevas. Vigilancia continua de CVEs previamente informados.
 
 ## 2. Recomendaciones SOC L1
 
-1. ðŸ”´ **Prioridad 1 - Sin nuevos hallazgos:** no se requiere acciÃ³n nueva. Mantener remediaciÃ³n de CVEs con deadline 23/11.
-2. ðŸŸ  **Prioridad 2 - VerificaciÃ³n de inventario:** confirmar que vCenter, Roller, Expressway, Synology DSM y NGINX estÃ©n parcheados o en proceso.
+1. ðŸ”´ **Prioridad 1 - Sin nuevos hallazgos:** no se requiere acción nueva. Mantener remediación de CVEs con deadline 23/11.
+2. ðŸŸ  **Prioridad 2 - Verificación de inventario:** confirmar que vCenter, Roller, Expressway, Synology DSM y NGINX estén parcheados o en proceso.
 3. ðŸŸ¡ **General:** revisar logs de los sistemas afectados por CVEs previos; buscar IOCs conocidos (rutas webshell, hashes, IPs).
 
 ## 3. Recomendaciones SOC L2
 
-1. ðŸŸ  **Hardening:** mantener segmentaciÃ³n de vCenter, deshabilitar XML-RPC en Roller si no se usa, restringir acceso a Expressway database service.
-2. ðŸŸ¡ **Threat hunting:** buscar actividad de ransomware C3RB3R en Synology DSM; buscar webshells en NGINX; buscar RPC anÃ³malos en Expressway.
+1. ðŸŸ  **Hardening:** mantener segmentación de vCenter, deshabilitar XML-RPC en Roller si no se usa, restringir acceso a Expressway database service.
+2. ðŸŸ¡ **Threat hunting:** buscar actividad de ransomware C3RB3R en Synology DSM; buscar webshells en NGINX; buscar RPC anómalos en Expressway.
 3. ðŸŸ¢ **Tuning de detecciones:** mantener reglas Sigma/YARA existentes; alertar ante nuevas adiciones KEV.
-4. ðŸŸ¢ **Mejoras de proceso:** documentar estado de remediaciÃ³n por CVE antes del deadline 23/11.
+4. ðŸŸ¢ **Mejoras de proceso:** documentar estado de remediación por CVE antes del deadline 23/11.
 
 ## 4. Resumen ejecutivo
 
-- CISA no aÃ±adiÃ³ nuevos CVEs al KEV el 21/11.
-- No se detectaron PoC pÃºblicos nuevos ni explotaciÃ³n confirmada nueva ese dÃ­a.
+- CISA no añadió nuevos CVEs al KEV el 21/11.
+- No se detectaron PoC públicos nuevos ni explotación confirmada nueva ese día.
 - La prioridad sigue siendo cerrar los CVEs del 18/11 y 20/11 con deadline federal 23/11.
-- Vigilancia continua de Shadowserver y VulnCheck KEV para nuevas seÃ±ales.
+- Vigilancia continua de Shadowserver y VulnCheck KEV para nuevas señales.
 
 ## 5. Contexto de seguimiento
 
-- CVE-2024-10441 (Synology DSM) â€” KEV desde 18/11, deadline 23/11, ransomware C3RB3R. Sin cambios.
-- CVE-2026-123007 y hermanos (NGINX) â€” PoC pÃºblico. Sin cambios.
-- CVE-2026-59310 (VMware vCenter) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
-- CVE-2026-129448 (Apache Roller) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
-- CVE-2026-76466 (Cisco Expressway) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
-- CVE-2025-42884 (SAP NetWeaver EP) â€” KEV desde 20/11, deadline 23/11. Sin cambios.
-- CVE-2026-19868 (SonicWall SonicOS) â€” KEV desde 06/11. Sin cambios.
+- CVE-2024-10441 (Synology DSM) — KEV desde 18/11, deadline 23/11, ransomware C3RB3R. Sin cambios.
+- CVE-2026-123007 y hermanos (NGINX) — PoC público. Sin cambios.
+- CVE-2026-59310 (VMware vCenter) — KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-129448 (Apache Roller) — KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-76466 (Cisco Expressway) — KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2025-42884 (SAP NetWeaver EP) — KEV desde 20/11, deadline 23/11. Sin cambios.
+- CVE-2026-19868 (SonicWall SonicOS) — KEV desde 06/11. Sin cambios.
 
 ## 6. Cobertura y limitaciones
 
 - Fuentes consultadas: CISA KEV, NVD, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
 - No se encontraron nuevas adiciones KEV el 21/11.
-- Algunos CVEs recientes pueden no tener EPSS disponible aÃºn.
+- Algunos CVEs recientes pueden no tener EPSS disponible aún.
 
 ```json
 {"fecha":"2026-11-21","cves":[],"otras_amenazas":[]}
 ```
 
 ---
+
 # 🔴 Informe CTI Diario — 2026-11-20
 
 **Fecha del informe:** 21/11/2026  **Cobertura:** novedades del viernes 20 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · XML-RPC = protocolo de llamada a procedimiento remoto basado en XML · VPN = red privada virtual · MFA = autenticación multifactor · SAML = estándar de autenticación federada.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > 📌 **Resumen en 30 segundos:** CISA añadió 4 CVEs al KEV el 20/11 con deadline federal 23/11: VMware vCenter (CVE-2026-59310, directory traversal, 9.8), Apache Roller (CVE-2026-129448, deserialización XML-RPC, 9.8), Cisco Expressway (CVE-2026-76466, credenciales hard-coded, 9.8) y SAP NetWeaver Enterprise Portal (CVE-2025-42884, SQL injection, 6.5). Parchear antes del 23/11; asumir compromiso si no es posible.
@@ -275,7 +368,27 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter a 9.1.1.0200/9.0.2.0200/8.0 U3m/5.2.5. Ransomware activo. | 1-2 h |
 | 2 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Pre-auth RCE. | 30 min-1 h |
 | 3 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Creds hard-coded en DB service. RCE root. | 1-2 h |
@@ -285,7 +398,19 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 ### Prioridades
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 - VMware vCenter (CVE-2026-59310, 9.8, KEV) | Parchear vCenter a 9.1.1.0200 / 9.0.2.0200 / 8.0 U3m / 5.2.5. Directory traversal en Syslog → RCE. Ataque activo por actor China-nexus desplegando ransomware. Deadline federal 23/11. |
 | 2 | 🔴 P2 - Apache Roller (CVE-2026-129448, 9.8, KEV) | Actualizar Roller a 6.1.6 o deshabilitar XML-RPC. Deserialización pre-auth en XML-RPC endpoint. Explotación activa confirmada. Deadline federal 23/11. |
 | 3 | 🔴 P3 - Cisco Expressway (CVE-2026-76466, 9.8, KEV) | Actualizar a X15.5.20. Credenciales hard-coded en database service de clustered Expressway-C/E. RCE como root sin auth. Deadline federal 23/11. |
@@ -334,7 +459,27 @@ CVE-2026-124194 es una falla en Microsoft Outlook que no avisa al usuario antes 
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-59310 | 9.8 (v3) | VMware vCenter | Directory traversal en Syslog → RCE. Ransomware activo. | - |
 | 🔴 CVE-2026-129448 | 9.8 (v3) | Apache Roller | Deserialización XML-RPC pre-auth → RCE. | - |
 | 🔴 CVE-2026-76466 | 9.8 (v3) | Cisco Expressway | Creds hard-coded en DB service → RCE root. | - |
@@ -458,7 +603,6 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 
 **Fecha del informe:** 19/11/2026  **Cobertura:** novedades del martes 18 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · DSM = DiskStation Manager · LLM = modelo de lenguaje grande · NAS = almacenamiento conectado a red.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > 📌 **Resumen en 30 segundos:** CISA añadió 4 CVEs al KEV el 18/11: Synology DSM (CVE-2024-10441, CVSS 9.8, explotado por ransomware C3RB3R), LiteLLM (CVE-2026-40217, RCE), Apache Axis 1.x (CVE-2026-90436, RCE unauth), REDCap (CVE-2026-90817, RCE unauth). Además se publicaron 5 CVEs críticos de NGINX (CVE-2026-123007, CVSS 9.2) con PoC público y explotación confirmada en cloud. Priorizar Synology (ransomware activo) y NGINX (PoC público).
@@ -470,7 +614,27 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### Top 5 atacar hoy
 
 | # | CVE | Severidad | Acción | Tiempo est. |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM; si no es posible, aislar del Internet. Ransomware C3RB3R activo. | 1-2 h |
 | 2 | CVE-2026-123007 (NGINX HTTP/2) | 🔴 9.2 | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2. PoC público. | 30 min-1 h |
 | 3 | CVE-2026-90817 (REDCap) | 🔴 ~9.8 | Actualizar a 16.0.49/17.3.10/17.4.4. RCE unauth. | 1-2 h |
@@ -480,7 +644,19 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### Prioridades
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 - Synology DSM (CVE-2024-10441, 9.8, KEV) | Parchear DSM a la versión fija; si no es posible, aislar del Internet. Ransomware C3RB3R desplegándose contra NAS sin parchear. Deadline federal 21/11. |
 | 2 | 🔴 P2 - NGINX (CVE-2026-123007 y hermanos, 9.2, PoC público) | Parchear a 1.31.9/1.30.7 o deshabilitar HTTP/2 como mitigación temporal. PoC público en GitHub; explotación confirmada en cloud. |
 | 3 | 🔴 P3 - REDCap (CVE-2026-90817, ~9.8, KEV) | Actualizar a 16.0.49 / 17.3.10 / 17.4.4. RCE unauth con hash de encuesta pública. Deadline federal 21/11. |
@@ -527,7 +703,27 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2024-10441 | 9.8 (v3) | Synology DSM | RCE via improper encoding en system plugin daemon → C3RB3R ransomware | - |
 | 🔴 CVE-2026-90817 | ~9.8 (v3) | REDCap | RCE unauth via survey passthrough routing + Data Import | - |
 | 🔴 CVE-2026-90436 | Crítico (v3) | Apache Axis 1.x | RCE unauth via unsafe reflection (CWE-470) en SOAP fault handling | - |
@@ -643,7 +839,6 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 
 **Fecha del informe:** 18/11/2026  **Cobertura:** novedades del lunes 17 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > 💡 **Resumen en 30 segundos:** CISA añadió un nuevo CVE al KEV el 17/11: CVE-2026-115731 (Perforce Puppet Enterprise, deserialización, CVSS 4.0 9.4), con fecha federal de remediación el 01/12. Explotación confirmada; parche disponible desde el 03/11 (PE 2026.0.1/2025.12.1/2023.8.13 y Puppet Core 9.1.3/8.22.2). Revisar autosigning de certificados y certificados emitidos. Sin otras adiciones al KEV ese día.
@@ -653,7 +848,19 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 — Perforce Puppet Enterprise (CVE-2026-115731, 9.4, KEV) | Parchear a PE 2026.0.1 / 2025.12.1 / 2023.8.13 (o Puppet Core 9.1.3/8.22.2) y reiniciar Puppet Server; revisar autosigning y certificados emitidos. Deadline federal 01/12. |
 | 2 | 🔴 P2 — Check Point Gaia / UnrealIRCd | Vencimiento federal 16/11 ya cumplido; si algún gateway/servidor sigue sin parchear, asumir compromiso y cazar IOCs. |
 | 3 | 🟠 P3 — Dispositivos EOL (D-Link, DrayTek) | CVEs críticos 9.9-10.0 sin parche confirmado; aislar o reemplazar. |
@@ -695,7 +902,27 @@ cd "F:\Repositorios\CyberThreatIntelligence" && ls -la
 ### 5.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-115731 | 9.4 (CVSS 4.0) | Perforce Puppet Enterprise | Deserialización de datos no confiables en el procesamiento de reportes → RCE como usuario del Puppet Server | — |
 
 > ℹ️ CISA no nombró atacante ni publicó IOCs. El listing confirma explotación activa; el alcance real se desconoce.
@@ -745,7 +972,6 @@ echo done
 
 **Fecha del informe:** 17/11/2026  **Cobertura:** novedades del domingo 16 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > 💡 **Resumen en 30 segundos:** Sin nuevas adiciones oficiales al KEV el 16/11 (última: 13/11). Hoy venció la fecha federal para Check Point Gaia y UnrealIRCd: verificar parcheo antes de cerrar el turno. NVD publicó ~200 CVEs en 30 h, 32 de score ≥8.5; destacan Dassault 3DEXPERIENCE (CVSS 10), D-Link DSL-6740C (10, creds hard-coded, PoC público), DrayTek Vigor2960 (9.9, fix 1.5.1.7), ConnectWise ScreenConnect (9.9, marcado KEV por terceros) y Apache Axis 1.x/N-able (9.8, explotado). Prioridad: confirmar que Gaia/UnrealIRCd quedaron parcheados; si no, asumir compromiso y cazar IOCs.
@@ -755,7 +981,19 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 — Check Point Gaia / UnrealIRCd | Vencimiento federal **16/11**. Verificar parche aplicado; si no, asumir compromiso y cazar IOCs (webshells TSGA/TSProxy, `/tmp/dynamic_socket`, `destroy_v6`). |
 | 2 | 🔴 P2 — ConnectWise ScreenConnect (CVE-2026-84869, 9.9) | Reportado como KEV el 16/11 por fuentes de terceros. Verificar versión del servidor y parchear de inmediato. |
 | 3 | 🔴 P3 — D-Link DSL-6740C (CVE-2026-129444, 10.0) | Creds hard-coded en FTP, PoC público, producto EOL. Aislar del Internet o reemplazar. |
@@ -803,7 +1041,27 @@ echo done
 ### 4.1 KEV / explotación confirmada
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-84869 | 9.9 | ConnectWise ScreenConnect | RCE sin autenticación (marcado KEV por terceros el 16/11) | — |
 | 🔴 CVE-2026-90436 | 9.8 | Apache Axis 1.x / N-able N-central | RCE sin autenticación, explotado en la calle | — |
 | 🟠 CVE-2026-111560 | 7.2 | Barracuda (OS command injection) | KEV (reportado por terceros) | — |
@@ -813,7 +1071,23 @@ echo done
 ### 4.2 CVEs críticos publicados el 16/11 (sin KEV confirmado)
 
 | CVE | CVSS | Producto | Impacto |
-|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-93664 | 10.0 | Dassault Systèmes 3DEXPERIENCE (Station Launcher App) | Deserialización no confiable → RCE sin autenticación |
 | 🔴 CVE-2026-129444 | 10.0 | D-Link DSL-6740C | Creds hard-coded en FTP, PoC público, producto EOL |
 | 🔴 CVE-2026-129449 | 9.9 | DrayTek Vigor2960 | Heap overflow en mainfunction.cgi, PoC público, fix 1.5.1.7 |
@@ -881,7 +1155,6 @@ echo done
 
 **Fecha del informe:** 16/11/2026  **Cobertura:** novedades del sábado 15 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > 💡 **Resumen en 30 segundos:** Sin nuevas adiciones al KEV (última: 13/11). NVD publicó 112 CVEs el 15/11, 15 críticos, ninguno explotado. Prioridad real sigue siendo Check Point Gaia + UnrealIRCd (vencimiento federal **16/11**). Acción inmediata: verificar parcheo antes de esa fecha.
@@ -891,7 +1164,19 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 - Check Point Gaia / UnrealIRCd | Vencimiento federal **16/11**. Verificar parche aplicado; si no, asumir compromiso y cazar IOCs. |
 | 2 | 🟠 P2 - Windows Patch Tuesday (LDAP/Schannel/CredSSP/IIS/MSMQ) | CVE-2026-119958 LDAP (9.8) y otros RCEs sin KEV pero red-reachables. Parchear DCs y servidores expuestos en este ciclo. |
 | 3 | 🟠 P3 - Dispositivos EOL (D-Link, DrayTek) | CVEs críticos 9.9-10.0 en routers EOL/sin soporte. Inventariar y reemplazar o segmentar. |
@@ -935,7 +1220,27 @@ echo done
 ### 4.1 CVEs críticos de Windows (Patch Tuesday)
 
 | CVE | CVSS | Producto | Impacto | EPSS |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🟠 CVE-2026-119958 | 9.8 | Windows LDAP | RCE sin autenticación sobre DCs | 1.3% |
 | 🟠 CVE-2026-119952 | 8.1 | Schannel (TLS) | RCE sin autenticación, alta complejidad | 0.9% |
 | 🟠 CVE-2026-119962 | 8.1 | CredSSP (RDP) | Double free, alta complejidad | 0.9% |
@@ -949,7 +1254,23 @@ echo done
 ### 4.2 Dispositivos de borde EOL / críticos
 
 | CVE | CVSS | Producto | Impacto |
-|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-129353 | 10.0 | D-Link DIR-600L | Stack overflow en authentication.cgi |
 | 🔴 CVE-2026-129354 | 10.0 | D-Link DIR-600L | Stack overflow en HNAP cgibin |
 | 🔴 CVE-2026-129444 | 10.0 | D-Link DSL-6740C | Credenciales hard-coded en FTP daemon |
@@ -962,7 +1283,23 @@ echo done
 ### 4.3 WordPress plugins críticos
 
 | CVE | CVSS | Plugin | Impacto |
-|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-122662 | 9.8 | Document Library Pro | PHP Object Injection |
 | 🔴 CVE-2026-125769 | 9.8 | Advanced Form Integration | Privilege Escalation |
 | 🔴 CVE-2026-125795 | 9.8 | Estatik | Local File Inclusion |
@@ -994,7 +1331,6 @@ echo done
 
 **Fecha del informe:** 15/11/2026  **Cobertura:** novedades del sábado 14 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs y fabricantes oficiales.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > ⚡ **Resumen en 30 segundos:** 5 CVEs criticos nuevos el 14/11, ninguno en KEV. Prioridad real sigue siendo Check Point Gaia + UnrealIRCd (vencimiento 16/11). Accion inmediata: parchear antes del 16/11.
@@ -1004,7 +1340,19 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 — Check Point Gaia / UnrealIRCd | Siguen en KEV, vencimiento federal **16/11**. Parchear antes de esa fecha. |
 | 2 | 🟠 P2 — 5 CVEs nuevos del 14/11 | TRENDnet EOL, Shipo, Dokploy, Fluent Forms, AutomatorWP. Sin explotación: inventario y parcheo rutinario. |
 | 3 | 🟡 Pendiente | Análisis de avisos ICS CISA ICSA-26-316-01/02/03 (Siemens, Node.js/PHP2Shell). |
@@ -1034,7 +1382,27 @@ echo done
 ## 4. Novedades del 14/11 sin explotación confirmada (vigilancia)
 
 | CVE | CVSS | Producto | Impacto | Notas |
-|---|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-129351 | Crítica | TRENDnet TEW-657BRM (mini_httpd) | Out-of-bounds write remoto, sin autenticación | Producto EOL; fabricante no confirma la vulnerabilidad |
 | 🔴 CVE-2026-19907 | Crítica | Plugin WordPress "Shipo" | Bypass de autenticación → impersonación de admin vía REST API | Sin explotación confirmada |
 | 🔴 CVE-2026-129433 | Crítica | Dokploy | Inyección de comandos OS como root vía backup (nombre de servicio) | Requiere usuario autenticado |
@@ -1063,12 +1431,10 @@ echo done
 ```
 
 
-
 # ️ Informe CTI Diario — 2026-11-13
 
 **Fecha del informe:** 14/11/2026  **Cobertura:** novedades del viernes 13 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, fabricantes oficiales (UnrealIRCd, Check Point), CERT locales (CCB Bélgica), investigación de proveedores.
-**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado.
 **Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
 
 > ⚡ **Resumen en 30 segundos:** CISA anadio 2 CVEs al KEV el 13/11 (UnrealIRCd + Check Point Gaia), vencimiento 16/11. Cadena de ataque Check Point activa con wiper destructivo en victimas israelies. Parchear antes del 16/11.
@@ -1078,7 +1444,19 @@ echo done
 ## 1. Turno de vigilancia — qué atender primero
 
 | # | Prioridad | Acción |
-|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 1 | 🔴 P1 — Check Point Gaia | Inventariar gateways Gaia (versión y take del Jumbo); parchear a los takes indicados o aplicar la mitigación de `dynamic_server`. Cazar: `/tmp/dynamic_socket` con permisos 0777, comandos en `dynamicCli.log` sin wrapper Clish, webshells en plantillas de login del portal, conexiones desde `130.94.19[.]204`, procesos inusuales en hosts ESXi. |
 | 2 | 🔴 P1 — UnrealIRCd | Si hay servidores IRC internos/externos, verificar 6.2.7.1 o hot-patch `bundle-20261107`. |
 | 3 | 🟠 P2 — Outlook | Confirmar despliegue del parche de noviembre y reglas de bloqueo de NTLM saliente; alertar sobre tráfico hacia servidores externos con auth NTLM tras apertura de adjuntos .msg. |
@@ -1138,7 +1516,23 @@ echo done
 ## 5. Novedades del 13/11 sin explotación confirmada (vigilancia)
 
 | CVE | CVSS | Producto | Impacto |
-|---|---|---|---|
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
+
+---
+
+|
 | 🔴 CVE-2026-124002 | 9.3 | XWEB EVO 5.2.3–5.7.0 | Inyección de comandos OS pre-autenticación |
 | 🔴 CVE-2026-124010 | 9.3 | XWEB EVO < 5.6.2 | Inyección de comandos pre-autenticación |
 | 🔴 CVE-2026-124006 | 9.2 | XWEB EVO ≤ 5.8.8 | Generación de credenciales predecible → credenciales root Linux derivables |
