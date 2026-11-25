@@ -1,3 +1,101 @@
+# 📡 Informe CTI Diario - 2026-11-23
+
+**Fecha del informe:** 24/11/2026  **Cobertura:** novedades del lunes 23 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Siglas:** KEV = catálogo de vulnerabilidades explotadas conocidas de CISA · CVSS = puntuación de severidad 0-10 · CWE = tipo de debilidad · PoC = prueba de concepto · EOL = fin de soporte · APT = actor de amenaza persistente avanzado · EPSS = probabilidad de explotación en 30 días · RCE = ejecución remota de código · SSRF = falsificación de solicitud del lado del servidor · LDAP = protocolo de acceso a directorios ligeros · MSP = proveedor de servicios gestionados · DFIR = respuesta a incidentes digitales y forense.
+**Leyenda de severidad:** 🔴 Crítica (9-10) · 🟠 Alta (7-8.9) · 🟡 Media (4-6.9) · 🟢 Baja (<4).
+
+> ⚡ **Resumen en 30 segundos:** CISA añadió 1 CVE al KEV el 23/11: CVE-2026-134624 (N-able MailAssure/SpamExperts SSRF, CVSS 9.3), descubierto durante un breach activo en la nube de N-able. Parche disponible (versión 20261121.1943). MSPs y usuarios de Mail Assure deben actualizar ya y rotar credenciales.
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-134624 (N-able MailAssure) | 🔴 9.3 | Actualizar a 20261121.1943. Rotar credenciales/API tokens. | 30 min-1 h |
+| 2 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter. Deadline 23/11 vencida. | 1-2 h |
+| 3 | CVE-2026-129448 (Apache Roller) | 🔴 9.8 | Actualizar a 6.1.6. Deadline 23/11 vencida. | 30 min-1 h |
+| 4 | CVE-2026-76466 (Cisco Expressway) | 🔴 9.8 | Actualizar a X15.5.20. Deadline 23/11 vencida. | 1-2 h |
+| 5 | CVE-2024-10441 (Synology DSM) | 🔴 9.8 | Parchear DSM. Ransomware C3RB3R. Deadline 23/11 vencida. | 1-2 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - CVE-2026-134624 (N-able MailAssure) | Actualizar Mail Assure/SpamExperts a 20261121.1943; rotar credenciales y tokens API/OAuth; revisar logs de LDAP sync connection check. |
+| 2 | 🟠 P2 - CVEs deadline 23/11 | Verificar cierre de vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall. |
+| 3 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
+
+> ℹ️ CISA añadió 1 CVE al KEV el 23/11. N-able reveló el parche tras un breach activo en su nube.
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Prioridad 1 - N-able MailAssure (CVE-2026-134624):** actualizar a 20261121.1943; rotar todas las credenciales, API tokens y OAuth tokens; revisar logs de conexión LDAP sync; buscar conexiones internas anómalas desde el servidor Mail Assure.
+2. 🟠 **Prioridad 2 - Deadline 23/11:** verificar estado de parcheo de vCenter, Roller, Expressway, Synology DSM, NGINX, SAP NetWeaver, SonicWall.
+3. 🟡 **General:** revisar logs de sistemas afectados; buscar IOCs conocidos (webshells, hashes, IPs, rutas de webshell).
+
+## 3. Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** segmentar el servidor Mail Assure de la red interna; aplicar microsegmentación east-west; restringir destinos de conexión SSRF.
+2. 🟠 **Threat hunting:** buscar en logs conexiones internas anómalas desde Mail Assure hacia puertos no estándar; buscar enumeración de servicios internos.
+3. 🟡 **Tuning de detecciones:** alertar ante nuevas adiciones KEV; mantener reglas Sigma/YARA existentes; detectar SSRF en conexión LDAP sync.
+4. 🟡 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV (BOD 26-04) como SLA interno.
+
+## 4. Resumen ejecutivo
+
+- CISA añadió 1 CVE al KEV el 23/11: CVE-2026-134624 (N-able MailAssure SSRF, CVSS 9.3, explotado en la calle).
+- La vulnerabilidad fue descubierta durante un breach activo en la nube de N-able (Mail Assure y SpamExperts Hosted Cloud).
+- Parche disponible (versión 20261121.1943); N-able rotó credenciales y revocó tokens.
+- La prioridad sigue siendo cerrar los CVEs con deadline 23/11 (vCenter, Roller, Expressway, Synology, NGINX, SAP, SonicWall).
+
+## 5. Hallazgos
+
+### En simple
+CVE-2026-134624 es una falla SSRF (falsificación de solicitud del lado del servidor) en N-able Mail Assure/SpamExperts, descubierta durante un breach activo en la nube de N-able. Un atacante autenticado con privilegios de API puede manipular la comprobación de conexión de sincronización LDAP para que el servidor Mail Assure se conecte a hosts internos arbitrarios, alcanzando servicios internos, almacenes de credenciales y endpoints de API, lo que permite escalación de privilegios y robo de credenciales. N-able parcheó la falla (versión 20261121.1943), rotó credenciales y revocó tokens; CISA la incluyó en KEV con deadline 26/11.
+
+### Detalle técnico
+- **CVE:** CVE-2026-134624
+- **CVSS:** 9.3 (Crítica, CVSSv3) — NVD reporta 8.7 en algunas fuentes; N-able reporta 9.3.
+- **CWE:** CWE-918 (Server-Side Request Forgery)
+- **Producto:** N-able Mail Assure (SpamExperts) Hosted Cloud < 20261121.1943
+- **Técnica MITRE ATT&CK:** T1190 (Exploit Public-Facing Application) y T1021 (Remote Services) para el movimiento lateral interno mediante SSRF.
+- **Explotación:** KEV (añadido 23/11/2026), explotado en la calle. Breach activo en la nube de N-able (Mail Assure y SpamExperts Hosted Cloud). Atacante autenticado con privilegios de API.
+- **Impacto:** acceso a hosts y servicios internos de la plataforma; escalación de privilegios mediante targeting de almacenes de credenciales y endpoints de servicio; robo de credenciales, creación de admins, ejecución de código como root en el servidor Mail Assure.
+- **Mitigaciones/Parches:** actualizar a Mail Assure 20261121.1943; rotar credenciales, API tokens y OAuth tokens; aplicar segmentación east-west y microsegmentación; restringir destinos de conexión LDAP sync.
+- **EPSS:** no disponible en fuentes consultadas.
+- **IOCs:** conexiones internas anómalas desde el servidor Mail Assure hacia puertos no estándar; enumeración de servicios internos; actividad de LDAP sync inusual.
+- **Sigma/YARA:** `title: N-able MailAssure SSRF LDAP Sync (CVE-2026-134624) | description: Detects anomalous internal connections from Mail Assure server indicative of SSRF exploitation | logsource: network | detection: selection: src_host: 'mailassure' AND dst_port: not in (389, 636, 443, 80) | condition: selection`
+- **Playbook:**
+  - Triage: verificar versión de Mail Assure desplegada; revisar logs de LDAP sync connection check; buscar conexiones internas anómalas desde el servidor.
+  - Contención: actualizar a 20261121.1943; rotar credenciales y tokens; aplicar segmentación east-west; restringir destinos de conexión.
+  - Verificación: confirmar versión parcheada; validar ausencia de conexiones internas anómalas post-parche; auditar accesos a servicios internos.
+
+## 6. Contexto de seguimiento
+- CVE-2026-134624 (N-able MailAssure): nuevo en KEV el 23/11, deadline 26/11.
+- CVE-2026-124194 (Outlook): sin cambios, deadline 24/11.
+- CVE-2026-59310 (vCenter): sin cambios, deadline 23/11 vencida.
+- CVE-2026-129448 (Roller): sin cambios, deadline 23/11 vencida.
+- CVE-2026-76466 (Expressway): sin cambios, deadline 23/11 vencida.
+- CVE-2024-10441 (Synology DSM): sin cambios, deadline 23/11 vencida.
+- CVE-2026-123007 (NGINX): sin cambios.
+- CVE-2025-42884 (SAP NetWeaver): sin cambios, deadline 23/11 vencida.
+- CVE-2026-19868 (SonicWall): sin cambios.
+
+## 7. Cobertura y limitaciones
+- Fuentes consultadas: CISA KEV, NVD, securityonline.info, SecurityWeek, The Hacker News, Aviatrix. 1 nueva adición KEV el 23/11.
+- EPSS no disponible para CVE-2026-134624 en las fuentes consultadas.
+- IOCs no publicados por N-able.
+- Posibles CVEs no incluidos si no aparecieron en fuentes priorizadas.
+
+```json
+{"fecha":"2026-11-23","cves":[{"id":"CVE-2026-134624","producto":"N-able Mail Assure (SpamExperts) Hosted Cloud","cvss":9.3,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a Mail Assure 20261121.1943; rotar credenciales y tokens API/OAuth","runbook":"1) Verificar version de Mail Assure desplegada. 2) Actualizar a 20261121.1943. 3) Rotar credenciales y tokens. 4) Revisar logs de LDAP sync connection check.","epss":null,"iocs":["conexiones internas anomalas desde Mail Assure","enumeracion de servicios internos","actividad de LDAP sync inusual"],"sigma":"Regla Sigma: deteccion de conexiones internas anomalas desde servidor Mail Assure indicativas de SSRF (puertos no estandar).","playbook":{"triage":["Verificar version de Mail Assure desplegada.","Revisar logs de LDAP sync connection check.","Buscar conexiones internas anomalas desde el servidor."],"contencion":["Actualizar a 20261121.1943.","Rotar credenciales y tokens.","Aplicar segmentacion east-west.","Restringir destinos de conexion."],"verificacion":["Confirmar version parcheada.","Validar ausencia de conexiones internas anomalas post-parche.","Auditar accesos a servicios internos."]}}],"otras_amenazas":[]}
+```
+
+---
+
+OLD_ENTRY_START
+oldString">
 # 📡 Informe CTI Diario - 2026-11-22
 
 **Fecha del informe:** 23/11/2026  **Cobertura:** novedades del domingo 22 de noviembre de 2026 (America/Santiago)
