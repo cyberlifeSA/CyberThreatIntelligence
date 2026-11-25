@@ -125,8 +125,6 @@ CVE-2026-134624 es una falla SSRF (falsificación de solicitud del lado del serv
 
 ---
 
-OLD_ENTRY_START
-oldString">
 # 📡 Informe CTI Diario - 2026-11-22
 
 **Fecha del informe:** 23/11/2026  **Cobertura:** novedades del domingo 22 de noviembre de 2026 (America/Santiago)
@@ -1119,7 +1117,6 @@ echo done
 
 ---
 
-# 📋 Informe CTI Diario — 2026-11-15", "oldString": "# 📋 Informe CTI Diario — 2026-11-15"}
 
 **Fecha del informe:** 16/11/2026  **Cobertura:** novedades del sábado 15 de noviembre de 2026 (America/Santiago)
 **Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
