@@ -1,3 +1,196 @@
+# 📋 Informe CTI Diario - 2026-11-25
+
+**Fecha del informe:** 26/11/2026  **Cobertura:** novedades del miércoles 25 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Leyenda de severidad:** 🔴 Crítica (9-10) 🟠 Alta (7-8.9) 🟡 Media (4-6.9) 🟢 Baja (<4).
+
+> ⚡ **Resumen en 30 segundos:** CISA añadió 10 CVE al KEV el 25/11: 5 en Mitel MiCollab (uno CVSS 10.0), además de Vates Xen Orchestra (9.8, explotado desde IP 91.211.251.112), HPE Juniper Session Smart (9.8, explotado), y 3 Danfoss AK-SM 800A (8.5-9.9, vinculados a ataques a supermercados europeos). Plazos FCEB: 28/11 (mayoría) y 09/12 (CVE-2026-133311 y CVE-2025-41450). Además CISA alertó de CVE-2026-129713 en Danfoss (CVSS 9.8/9.3, sin parche).
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-133323 (Mitel MiCollab) | 🔴 10.0 | Actualizar MiCollab a 10.3.0.18 + parche. | 1-2 h |
+| 2 | CVE-2026-133469 (Vates Xen Orchestra) | 🔴 9.8 | Parchear Xen Orchestra. Bloquear IP 91.211.251.112 y dominio .onion. | 1 h |
+| 3 | CVE-2026-103406 (HPE Juniper Session Smart) | 🔴 9.8 | Actualizar Session Smart Conductor/Router. | 1-2 h |
+| 4 | CVE-2026-133303 (Mitel MiCollab) | 🔴 9.0 | Actualizar MiCollab a 10.3.0.18 + parche. | 1-2 h |
+| 5 | CVE-2026-129713 (Danfoss AK-SM 8xxA) | 🔴 9.8/9.3 | Sin parche: VPN/Strict mode, aislar red OT. | 2-4 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - Mitel MiCollab (5 CVEs) | Actualizar a 10.3.0.18 + parche; restringir acceso externo al componente AWV; revisar logs de subida de archivos y comandos. |
+| 2 | 🔴 P1 - Xen Orchestra (CVE-2026-133469) | Parchear; bloquear IOC 91.211.251.112:8001 y ustar3rqxgnskzgnwkgpofgtvxevm6cx3lxdbwt4mndtveqyaohid.onion:3333; revisar tokens de autenticación vacíos. |
+| 3 | 🔴 P1 - HPE Juniper (CVE-2026-103406) | Actualizar Session Smart; revisar salt minion IDs sospechosos. |
+| 4 | 🟠 P2 - Danfoss AK-SM 800A (3 CVEs) | Parchear firmware; vinculado a ataques a supermercados europeos (Shahid Kaveh/IRGC). |
+| 5 | 🟠 P2 - Danfoss AK-SM 8xxA (CVE-2026-129713, sin parche) | Aplicar mitigaciones temporales (VPN, Strict mode, aislamiento). |
+| 6 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
+
+> ℹ️ CISA añadió 10 CVE al KEV el 25/11. Mitel publicó parche el 16/11; Vates y Juniper confirmaron explotación activa.
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Mitel MiCollab (CVE-2026-133275/133303/133311/133323/133324):** actualizar a 10.3.0.18 + parche; restringir acceso externo al componente AWV; revisar logs de subida de archivos arbitrarios, inyección XML y bypass de autenticación.
+2. 🔴 **Xen Orchestra (CVE-2026-133469):** parchear; bloquear IOCs (91.211.251.112, dominio .onion); revisar tokens de autenticación con objeto JSON vacío; buscar acciones administrativas no autorizadas.
+3. 🔴 **HPE Juniper (CVE-2026-103406):** actualizar Session Smart; revisar salt minion IDs con caracteres especiales; buscar ejecución de comandos como root.
+4. 🟠 **Danfoss AK-SM 800A (CVE-2023-25914/25915, CVE-2025-41450):** actualizar firmware; revisar logs de acceso al interfaz XML y generación de informes web.
+5. 🟠 **Danfoss AK-SM 8xxA (CVE-2026-129713, sin parche):** aplicar VPN/Strict mode/aislamiento; monitorear peticiones HTTP POST a handlers CGI.
+
+## 3. Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** segmentar redes OT/ICS de redes de negocio; aplicar microsegmentación; restringir acceso externo a componentes de conferencia (AWV).
+2. 🟠 **Threat hunting:** buscar en logs conexiones desde IPs de amenaza (91.211.251.112); buscar tokens vacíos en autenticación; buscar ejecución de comandos en MiCollab y Xen Orchestra.
+3. 🟠 **Tuning de detecciones:** alertar ante nuevas adiciones KEV; detectar inyección XML y command injection en MiCollab; detectar bypass de autenticación en Xen Orchestra.
+4. 🟠 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV (BOD 26-04) como SLA; priorizar dispositivos OT sin parche.
+
+## 4. Resumen ejecutivo
+
+- CISA añadió 10 CVE al KEV el 25/11: 5 Mitel MiCollab, 1 Vates Xen Orchestra, 1 HPE Juniper, 3 Danfoss AK-SM 800A.
+- Xen Orchestra (CVE-2026-133469, CVSS 9.8) explotado activamente desde IP 91.211.251.112 y dominio .onion.
+- HPE Juniper (CVE-2026-103406, CVSS 9.8) con al menos un caso de explotación reportado.
+- Danfoss AK-SM 800A vinculado a ataques a supermercados europeos atribuidos a Shahid Kaveh (IRGC).
+- CISA alertó de CVE-2026-129713 en Danfoss AK-SM 8xxA (CVSS 9.8/9.3) sin parche disponible.
+
+## 5. Hallazgos
+
+### En simple
+CISA añadió 10 vulnerabilidades al catálogo KEV el 25/11. Cinco afectan Mitel MiCollab (componente AWV), incluyendo una de severidad máxima (CVSS 10.0) que permite inyección de comandos. Vates Xen Orchestra tiene un bypass de autenticación (CVSS 9.8) que ya fue explotado desde una IP específica. HPE Juniper Session Smart tiene inyección de comandos OS (CVSS 9.8) también explotada. Tres fallos en Danfoss AK-SM 800A (controladores de refrigeración) están vinculados a ataques a supermercados europeos. Además, CISA alertó de una falla sin parche en Danfoss AK-SM 8xxA.
+
+### Detalle técnico
+
+**CVE-2026-133275** — Mitel MiCollab (AWV): subida arbitraria de archivos, CVSS 5.3. Versiones ≤10.3. Parche: 10.3.0.18.
+**CVE-2026-133303** — Mitel MiCollab (AWV): inyección XML → ejecución de comandos, CVSS 9.0. Versiones ≤10.3. Parche: 10.3.0.18.
+**CVE-2026-133311** — Mitel MiCollab (AWV): acceso no autorizado / fuga de info, CVSS 5.9. Versiones ≤10.3. Parche: 10.3.0.18.
+**CVE-2026-133323** — Mitel MiCollab (AWV): inyección de comandos OS, CVSS 10.0. Versiones ≤10.3. Parche: 10.3.0.18.
+**CVE-2026-133324** — Mitel MiCollab (AWV): bypass de autenticación, CVSS 5.3. Versiones ≤10.3. Parche: 10.3.0.18.
+**CVE-2026-133469** — Vates Xen Orchestra: bypass de autenticación mediante token con objeto JSON vacío, CVSS 9.8. Explotado desde 91.211.251.112:8001 y dominio .onion:3333.
+**CVE-2026-103406** — HPE Juniper Session Smart Conductor/Router: inyección de comandos OS via salt minion ID, CVSS 9.8. Explotado (reportado al SIRT).
+**CVE-2023-25914** — Danfoss AK-SM 800A: path traversal via interfaz XML, CVSS 8.8.
+**CVE-2023-25915** — Danfoss AK-SM 800A: validación de entrada incorrecta → ejecución de comandos, CVSS 9.9.
+**CVE-2025-41450** — Danfoss AK-SM 800A: autenticación incorrecta → fuga de info (IPs, usuarios, nombres de tienda), CVSS 8.5.
+**CVE-2026-129713** — Danfoss AK-SM 8xxA: buffer overflow en handler CGI no autenticado, CVSS 9.8/9.3. Sin parche (previsto en 5.5.x). Mitigaciones: VPN, Strict mode, aislamiento.
+
+### Tabla comparativa
+
+| CVE | Producto | CVSS | Explotación | Plazo FCEB |
+|---|---|---|---|---|
+| CVE-2026-133275 | Mitel MiCollab | 5.3 | KEV | 28/11 |
+| CVE-2026-133303 | Mitel MiCollab | 9.0 | KEV | 28/11 |
+| CVE-2026-133311 | Mitel MiCollab | 5.9 | KEV | 09/12 |
+| CVE-2026-133323 | Mitel MiCollab | 10.0 | KEV | 28/11 |
+| CVE-2026-133324 | Mitel MiCollab | 5.3 | KEV | 28/11 |
+| CVE-2026-133469 | Vates Xen Orchestra | 9.8 | KEV + activa | 28/11 |
+| CVE-2026-103406 | HPE Juniper Session Smart | 9.8 | KEV + activa | 28/11 |
+| CVE-2023-25914 | Danfoss AK-SM 800A | 8.8 | KEV | 28/11 |
+| CVE-2023-25915 | Danfoss AK-SM 800A | 9.9 | KEV | 28/11 |
+| CVE-2025-41450 | Danfoss AK-SM 800A | 8.5 | KEV | 09/12 |
+| CVE-2026-129713 | Danfoss AK-SM 8xxA | 9.8/9.3 | Sin parche | N/A |
+
+## 6. Contexto de seguimiento
+
+- CVE-2026-134624 (N-able MailAssure): sin novedades; parche 20261121.1943 disponible.
+- CVEs deadline 23/11 (vCenter, Roller, Expressway, Synology, NGINX, SAP, SonicWall): verificar cierre.
+
+## 7. Cobertura y limitaciones
+
+Fuentes: CISA KEV/alertas, NIST NVD, MITRE ATT&CK, The Hacker News, fabricantes oficiales (Mitel, Vates, Juniper, Danfoss). No se encontraron IOCs adicionales para Mitel/HPE/Juniper más allá de los documentados. EPSS no disponible en fuentes consultadas.
+
+## META DEL PANEL (no se muestra en la tarjeta)
+```json
+{"fecha":"2026-11-25","cves":[{"id":"CVE-2026-133275","producto":"Mitel MiCollab","cvss":5.3,"severidad":"Media","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 10.3.0.18 + parche","runbook":"Actualizar MiCollab; restringir acceso externo AWV; revisar logs de subida de archivos","epss":null,"iocs":[],"sigma":"detection: mitel_micollab_arbitrary_file_upload","playbook":{"triage":["Verificar versión MiCollab","Revisar logs AWV"],"contencion":["Restringir acceso externo AWV","Aplicar parche"],"verificacion":["Confirmar versión 10.3.0.18","Validar logs limpios"]}}, {"id":"CVE-2026-133303","producto":"Mitel MiCollab","cvss":9.0,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 10.3.0.18 + parche","runbook":"Actualizar MiCollab; revisar inyección XML en AWV","epss":null,"iocs":[],"sigma":"detection: mitel_micollab_xml_injection","playbook":{"triage":["Verificar versión","Revisar logs XML"],"contencion":["Aplicar parche","Restringir AWV"],"verificacion":["Confirmar parche","Validar sin comandos ejecutados"]}}, {"id":"CVE-2026-133311","producto":"Mitel MiCollab","cvss":5.9,"severidad":"Media","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 10.3.0.18 + parche","runbook":"Actualizar MiCollab; revisar accesos no autorizados","epss":null,"iocs":[],"sigma":"detection: mitel_micollab_unauth_access","playbook":{"triage":["Verificar versión","Revisar logs de acceso"],"contencion":["Aplicar parche"],"verificacion":["Confirmar versión","Validar sin fugas"]}}, {"id":"CVE-2026-133323","producto":"Mitel MiCollab","cvss":10.0,"severidad":"Critica","mitre":{"id":"T1059","nombre":"Command and Scripting Interpreter"},"explotacion":"KEV","parche":"Actualizar a 10.3.0.18 + parche","runbook":"Actualizar MiCollab; buscar ejecución de comandos en AWV","epss":null,"iocs":[],"sigma":"detection: mitel_micollab_command_injection","playbook":{"triage":["Verificar versión","Buscar comandos ejecutados"],"contencion":["Aplicar parche","Aislar AWV"],"verificacion":["Confirmar versión","Validar sin RCE"]}}, {"id":"CVE-2026-133324","producto":"Mitel MiCollab","cvss":5.3,"severidad":"Media","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"KEV","parche":"Actualizar a 10.3.0.18 + parche","runbook":"Actualizar MiCollab; revisar bypass de autenticación","epss":null,"iocs":[],"sigma":"detection: mitel_micollab_auth_bypass","playbook":{"triage":["Verificar versión","Revisar logs auth"],"contencion":["Aplicar parche"],"verificacion":["Confirmar versión","Validar auth"]}}, {"id":"CVE-2026-133469","producto":"Vates Xen Orchestra","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"KEV","parche":"Parchear Xen Orchestra","runbook":"Parchear; bloquear IP 91.211.251.112; revisar tokens vacíos","epss":null,"iocs":["91.211.251.112:8001","ustar3rqxgnskzgnwkgpofgtvxevm6cx3lxdbwt4mndtveqyaohid.onion:3333"],"sigma":"detection: xen_orchestra_empty_json_token_bypass","playbook":{"triage":["Revisar tokens vacíos","Buscar acciones admin"],"contencion":["Bloquear IPs","Parchear"],"verificacion":["Confirmar parche","Validar sin bypass"]}}, {"id":"CVE-2026-103406","producto":"HPE Juniper Session Smart","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1059","nombre":"Command and Scripting Interpreter"},"explotacion":"KEV","parche":"Actualizar Session Smart","runbook":"Actualizar; revisar salt minion IDs sospechosos","epss":null,"iocs":[],"sigma":"detection: juniper_session_smart_salt_minion_injection","playbook":{"triage":["Revisar salt minion IDs","Buscar comandos root"],"contencion":["Actualizar firmware"],"verificacion":["Confirmar versión","Validar sin RCE"]}}, {"id":"CVE-2023-25914","producto":"Danfoss AK-SM 800A","cvss":8.8,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar firmware","runbook":"Parchear firmware; revisar acceso XML","epss":null,"iocs":[],"sigma":"detection: danfoss_aksm800a_path_traversal","playbook":{"triage":["Verificar firmware","Revisar logs XML"],"contencion":["Parchear"],"verificacion":["Confirmar firmware","Validar sin traversal"]}}, {"id":"CVE-2023-25915","producto":"Danfoss AK-SM 800A","cvss":9.9,"severidad":"Critica","mitre":{"id":"T1059","nombre":"Command and Scripting Interpreter"},"explotacion":"KEV","parche":"Actualizar firmware","runbook":"Parchear firmware; buscar comandos ejecutados","epss":null,"iocs":[],"sigma":"detection: danfoss_aksm800a_command_injection","playbook":{"triage":["Verificar firmware","Buscar comandos"],"contencion":["Parchear"],"verificacion":["Confirmar firmware","Validar sin RCE"]}}, {"id":"CVE-2025-41450","producto":"Danfoss AK-SM 800A","cvss":8.5,"severidad":"Alta","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"KEV","parche":"Actualizar firmware","runbook":"Parchear firmware; revisar informes web generados","epss":null,"iocs":[],"sigma":"detection: danfoss_aksm800a_info_disclosure","playbook":{"triage":["Verificar firmware","Revisar informes web"],"contencion":["Parchear"],"verificacion":["Confirmar firmware","Validar sin fuga"]}}, {"id":"CVE-2026-129713","producto":"Danfoss AK-SM 8xxA","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"sin explotacion confirmada","parche":"Sin parche (previsto 5.5.x); mitigaciones temporales","runbook":"Aplicar VPN/Strict mode/aislamiento; monitorear CGI POST","epss":null,"iocs":[],"sigma":"detection: danfoss_aksm8xxa_cgi_buffer_overflow","playbook":{"triage":["Verificar versión ≤5.4.0","Monitorear CGI POST"],"contencion":["VPN/Strict mode","Aislar red OT"],"verificacion":["Confirmar mitigaciones","Validar sin explotación"]}}],"otras_amenazas":[{"nombre":"Shahid Kaveh (Cyber Aveng3rs)","tipo":"APT","resumen":"Unidad cibernética iraní vinculada a ataques a supermercados europeos usando Danfoss AK-SM 800A."}]}
+
+---
+
+# 📋 Informe CTI Diario - 2026-11-24
+
+**Fecha del informe:** 25/11/2026  **Cobertura:** novedades del martes 24 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Leyenda de severidad:** 🔴 Crítica (9-10) 🟠 Alta (7-8.9) 🟡 Media (4-6.9) 🟢 Baja (<4).
+
+> ⚡ **Resumen en 30 segundos:** CISA añadió 3 CVE al KEV el 24/11: CVE-2026-131914 (Idunno AntiCsrf deserialización, CVSS 9.8), CVE-2026-132165 (Drupal Core RCE, CVSS 9.8, Fail2Install) y CVE-2026-132224 (Optimizely Web Experimentation, CVSS 8.1, usado en skimming de tarjetas en CNN/BBC/Zoom).
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-132165 (Drupal Core) | 🔴 9.8 | Actualizar Drupal; deadline 27/11. | 1-2 h |
+| 2 | CVE-2026-131914 (Idunno AntiCsrf) | 🔴 9.8 | Parchear/actualizar componente AntiCsrf. | 1 h |
+| 3 | CVE-2026-132224 (Optimizely) | 🟠 8.1 | Auditar scripts Optimizely en sitios web; verificar integridad. | 2-4 h |
+| 4 | CVE-2026-134624 (N-able MailAssure) | 🔴 9.3 | Actualizar a 20261121.1943; rotar credenciales. | 30 min-1 h |
+| 5 | CVE-2026-59310 (VMware vCenter) | 🔴 9.8 | Parchear vCenter; deadline vencida. | 1-2 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - Drupal Core (CVE-2026-132165) | Actualizar Drupal Core; revisar instaladores; buscar RCE (Fail2Install). Deadline 27/11. |
+| 2 | 🔴 P1 - Idunno AntiCsrf (CVE-2026-131914) | Parchear componente AntiCsrf; buscar deserialización de datos no confiables. |
+| 3 | 🟠 P2 - Optimizely (CVE-2026-132224) | Auditar scripts Optimizely en sitios; verificar integridad de CDN; buscar skimmers de tarjetas. |
+| 4 | 🟠 P2 - N-able MailAssure (CVE-2026-134624) | Actualizar a 20261121.1943; rotar credenciales/API tokens. |
+| 5 | 🟡 General | Vigilar NVD/KEV; verificar Shadowserver. |
+
+> ℹ️ CISA añadió 3 CVE al KEV el 24/11. Optimizely usado en ataque de skimming a CNN, BBC y Zoom.
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Drupal Core (CVE-2026-132165):** actualizar Drupal Core; revisar instaladores expuestos; buscar RCE (Fail2Install / Too Many Connections). Deadline 27/11.
+2. 🔴 **Idunno AntiCsrf (CVE-2026-131914):** parchear componente; buscar deserialización de datos no confiables en logs.
+3. 🟠 **Optimizely (CVE-2026-132224):** auditar scripts Optimizely en sitios web; verificar integridad de CDN; buscar skimmers de tarjetas y kits de exploit iOS.
+4. 🟠 **N-able MailAssure (CVE-2026-134624):** actualizar a 20261121.1943; rotar credenciales/API tokens.
+
+## 3. Recomendaciones SOC L2
+
+1. 🟠 **Hardening:** segmentar CMS (Drupal) de red interna; aplicar WAF con reglas anti-deserialización; restringir acceso a instaladores.
+2. 🟠 **Threat hunting:** buscar en logs deserialización en AntiCsrf; buscar skimmers en scripts Optimizely; buscar RCE en Drupal (Fail2Install).
+3. 🟠 **Tuning de detecciones:** alertar ante nuevas adiciones KEV; detectar manipulación de scripts de terceros (Optimizely); detectar CVE-2026-132165 (Drupal).
+4. 🟠 **Mejoras de proceso:** documentar estado de remediación por CVE; usar fechas KEV como SLA.
+
+## 4. Resumen ejecutivo
+
+- CISA añadió 3 CVE al KEV el 24/11: Idunno AntiCsrf (9.8), Drupal Core RCE (9.8), Optimizely (8.1).
+- Drupal Core RCE (Fail2Install) con deadline 27/11; explotado en la calle.
+- Optimizely usado en ataque de skimming de tarjetas a visitantes de CNN, BBC y Zoom.
+- Idunno AntiCsrf: deserialización de datos no confiables, sin detalles de explotación.
+
+## 5. Hallazgos
+
+### En simple
+El 24/11 CISA añadió 3 vulnerabilidades al KEV. Drupal Core tiene un RCE (Fail2Install) que permite a un atacante tomar control de sitios web sin autenticación. Idunno AntiCsrf tiene una falla de deserialización que permite ejecución de código. Optimizely Web Experimentation fue explotado para inyectar un skimmer de tarjetas en sitios de alto tráfico (CNN, BBC, Zoom).
+
+### Detalle técnico
+
+**CVE-2026-131914** — Idunno AntiCsrf: deserialización de datos no confiables, CVSS 9.8. Sin detalles de explotación pública adicionales.
+**CVE-2026-132165** — Drupal Core: RCE (Fail2Install / Too Many Connections), CVSS 9.8. Explotado en la calle; deadline 27/11. Afecta instaladores de Drupal.
+**CVE-2026-132224** — Optimizely Web Experimentation: control externo de datos de estado crítico, CVSS 8.1. Usado en skimming de tarjetas y kits de exploit iOS en CNN, BBC y Zoom.
+
+### Tabla comparativa
+
+| CVE | Producto | CVSS | Explotación | Plazo FCEB |
+|---|---|---|---|---|
+| CVE-2026-131914 | Idunno AntiCsrf | 9.8 | KEV | 27/11 |
+| CVE-2026-132165 | Drupal Core | 9.8 | KEV + activa | 27/11 |
+| CVE-2026-132224 | Optimizely Web Experimentation | 8.1 | KEV + activa | 27/11 |
+
+## 6. Contexto de seguimiento
+
+- CVE-2026-134624 (N-able MailAssure): sin novedades.
+- CVEs deadline 23/11 (vCenter, Roller, Expressway, Synology, NGINX, SAP, SonicWall): verificar cierre.
+
+## 7. Cobertura y limitaciones
+
+Fuentes: CISA KEV/alertas, NIST NVD, The Hacker News, fabricantes oficiales. No se encontraron IOCs específicos para Idunno AntiCsrf. EPSS no disponible en fuentes consultadas.
+
+## META DEL PANEL (no se muestra en la tarjeta)
+```json
+{"fecha":"2026-11-24","cves":[{"id":"CVE-2026-131914","producto":"Idunno AntiCsrf","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Parchear componente AntiCsrf","runbook":"Parchear AntiCsrf; buscar deserialización en logs","epss":null,"iocs":[],"sigma":"detection: idunno_anticsrf_deserialization","playbook":{"triage":["Verificar componente","Revisar logs deserialización"],"contencion":["Parchear"],"verificacion":["Confirmar parche","Validar sin RCE"]}}, {"id":"CVE-2026-132165","producto":"Drupal Core","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar Drupal Core","runbook":"Actualizar Drupal; revisar instaladores; buscar RCE","epss":null,"iocs":[],"sigma":"detection: drupal_fail2install_rce","playbook":{"triage":["Verificar versión Drupal","Revisar instaladores"],"contencion":["Actualizar Core","Restringir instaladores"],"verificacion":["Confirmar versión","Validar sin RCE"]}}, {"id":"CVE-2026-132224","producto":"Optimizely Web Experimentation","cvss":8.1,"severidad":"Alta","mitre":{"id":"T1185","nombre":"Browser Session Hijacking"},"explotacion":"KEV","parche":"Auditar scripts Optimizely; verificar integridad CDN","runbook":"Auditar scripts; verificar integridad CDN; buscar skimmers","epss":null,"iocs":[],"sigma":"detection: optimizely_script_tampering","playbook":{"triage":["Auditar scripts Optimizely","Verificar CDN"],"contencion":["Eliminar scripts maliciosos","Bloquear CDN comprometido"],"verificacion":["Confirmar integridad","Validar sin skimmers"]}}],"otras_amenazas":[{"nombre":"Skimming CNN/BBC/Zoom","tipo":"campana","resumen":"Ataque de skimming de tarjetas usando scripts Optimizely comprometidos en sitios de alto tráfico."}]}
+PYEOF
+echo done
+
 # 📡 Informe CTI Diario - 2026-11-23
 
 **Fecha del informe:** 24/11/2026  **Cobertura:** novedades del lunes 23 de noviembre de 2026 (America/Santiago)
