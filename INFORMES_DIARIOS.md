@@ -1,3 +1,121 @@
+# 📋 Informe CTI Diario - 2026-11-26
+
+**Fecha del informe:** 27/11/2026  **Cobertura:** novedades del jueves 26 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Leyenda de severidad:** 🔴 Crítica (9-10) 🟠 Alta (7-8.9) 🟡 Media (4-6.9) 🟢 Baja (<4).
+**Siglas:** KEV = Known Exploited Vulnerabilities (catálogo CISA de vulnerabilidades con explotación confirmada); CVSS = Common Vulnerability Scoring System (puntaje de severidad 0-10); CWE = Common Weakness Enumeration (tipo de debilidad); PoC = Proof of Concept (código de prueba de explotación); EOL = End of Life (fin de soporte); APT = Advanced Persistent Threat (amenaza persistente avanzada); EPSS = Exploit Prediction Scoring System (probabilidad de explotación en 30 días); SSRF = Server-Side Request Forgery; RCE = Remote Code Execution; LPE = Local Privilege Escalation.
+
+> ℹ️ **Resumen en 30 segundos:** CISA mantuvo activo el plazo del 26/11 para dos CVE recién añadidos al KEV el 23/11: CVE-2026-134624 (N-able MailAssure, SSRF, CVSS 9.1) y CVE-2026-133968 (MONAI Label, deserialización insegura, CVSS 9.8, RCE). Además, NVD publicó CVE-2026-133951 (WordPress Simple Membership, escalación de privilegios, CVSS 9.8) y CVE-2026-137498/137499 (Budibase, prototype pollution y bypass de autenticación).
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-133968 (MONAI Label) | 🔴 9.8 | Actualizar MONAI Label; aislar servicio de etiquetado. | 1-2 h |
+| 2 | CVE-2026-134624 (N-able MailAssure) | 🟠 9.1 | Actualizar MailAssure; restringir API a IPs de confianza. | 1-2 h |
+| 3 | CVE-2026-133951 (WordPress Simple Membership) | 🔴 9.8 | Actualizar plugin a versión corregida; revisar usuarios. | 1 h |
+| 4 | CVE-2026-137499 (Budibase) | 🔴 9.8 | Actualizar Budibase a 4.0.0+. | 1-2 h |
+| 5 | CVE-2026-137498 (Budibase) | 🟠 8.x | Actualizar Budibase; validar filtros MongoDB. | 1-2 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - MONAI Label (CVE-2026-133968) | Deserialización insegura con RCE; actualizar y aislar el servicio. |
+| 2 | 🟠 P1 - N-able MailAssure (CVE-2026-134624) | SSRF en API autenticada; actualizar y restringir acceso. |
+| 3 | 🔴 P2 - WordPress Simple Membership (CVE-2026-133951) | Escalación de privilegios; actualizar plugin y auditar usuarios. |
+| 4 | 🟠 P2 - Budibase (CVE-2026-137498/137499) | Prototype pollution y bypass de auth; actualizar a 4.0.0+. |
+| 5 | 🟢 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
+
+> ℹ️ CISA añadió ambos CVE al KEV el 23/11 con plazo FCEB 26/11. NVD publicó los CVE de WordPress y Budibase el 26/11.
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **MONAI Label (CVE-2026-133968):** actualizar a versión corregida; aislar el servicio de etiquetado; revisar logs de deserialización y ejecución de comandos.
+2. 🟠 **N-able MailAssure (CVE-2026-134624):** actualizar; restringir API a IPs de confianza; revisar logs de peticiones SSRF.
+3. 🔴 **WordPress Simple Membership (CVE-2026-133951):** actualizar plugin; auditar usuarios y roles creados recientemente.
+4. 🟠 **Budibase (CVE-2026-137498/137499):** actualizar a 4.0.0+; validar filtros MongoDB y cuentas globales sin contraseña.
+
+## 3. Recomendaciones SOC L2
+
+- Hardening: restringir endpoints de API y servicios de etiquetado a redes de confianza.
+- Threat hunting: buscar IOCs de deserialización y SSRF en logs de aplicación.
+- Tuning: crear reglas de detección para patrones de deserialización insegura y SSRF.
+- Automatización: integrar KEV en el flujo de parcheo con alertas de plazo.
+- Mejora de proceso: inventario de plugins WordPress y versiones de Budibase.
+
+## 4. Resumen ejecutivo
+
+- CISA mantuvo el plazo del 26/11 para dos CVE KEV (MONAI Label y N-able MailAssure).
+- NVD publicó CVE-2026-133951 (WordPress Simple Membership) con CVSS 9.8.
+- NVD publicó CVE-2026-137498/137499 (Budibase) con prototype pollution y bypass de auth.
+- Recomendación: parchear MONAI Label y MailAssure de inmediato; actualizar plugins WordPress y Budibase.
+
+## 5. Hallazgos
+
+### En simple
+
+MONAI Label es una herramienta de etiquetado de imágenes médicas que tiene una falla de deserialización insegura que permite ejecución remota de código; MONAI es el proveedor y el riesgo es total control del servidor. N-able MailAssure es un gateway de correo con una falla SSRF que permite a usuarios autenticados de la API sondear servicios internos; el riesgo es fuga de información y movimiento lateral. WordPress Simple Membership es un plugin de membresías con escalación de privilegios que permite a usuarios sin privilegios tomar control; el riesgo es compromiso total del sitio. Budibase es una plataforma low-code con prototype pollution y bypass de autenticación que permite tomar control de cuentas globales; el riesgo es pérdida de datos y control.
+
+### Detalle técnico
+
+**CVE-2026-133968 — MONAI Label (deserialización insegura → RCE)**
+- CVSS: 9.8 (Crítica). CWE: CWE-502 (Deserialization of Untrusted Data).
+- MITRE ATT&CK: T1190 (Exploit Public-Facing Application); T1059 (Command and Scripting Interpreter).
+- Productos: MONAI Label (versiones afectadas según fabricante). Explotación: KEV (añadido 23/11/2026, plazo 26/11).
+- Impacto: ejecución remota de código sin autenticación en el servicio de etiquetado.
+- Mitigación: actualizar a versión corregida; aislar servicio; deshabilitar deserialización insegura.
+
+**CVE-2026-134624 — N-able MailAssure (SSRF)**
+- CVSS: 9.1 (Alta). CWE: CWE-918 (Server-Side Request Forgery).
+- MITRE ATT&CK: T1190 (Exploit Public-Facing Application); T1090 (Proxy).
+- Productos: N-able MailAssure (versiones afectadas). Explotación: KEV (añadido 23/11/2026, plazo 26/11).
+- Impacto: sondeo de servicios internos y envío de datos elaborados.
+- Mitigación: actualizar; restringir API a IPs de confianza.
+
+**CVE-2026-133951 — WordPress Simple Membership (escalación de privilegios)**
+- CVSS: 9.8 (Crítica). CWE: CWE-269 (Improper Privilege Management).
+- MITRE ATT&CK: T1078 (Valid Accounts); T1136 (Create Account).
+- Productos: Simple Membership plugin ≤ 4.8.9. Explotación: PoC/NVD (publicado 26/11/2026).
+- Impacto: escalación de privilegios a administrador.
+- Mitigación: actualizar plugin; auditar usuarios.
+
+**CVE-2026-137498/137499 — Budibase (prototype pollution + bypass de auth)**
+- CVSS: 8.x-9.8. CWE: CWE-1321 (Prototype Pollution), CWE-287 (Improper Authentication).
+- MITRE ATT&CK: T1190 (Exploit Public-Facing Application); T1078 (Valid Accounts).
+- Productos: Budibase Server 3.39.18 a 3.41.x (antes de 4.0.0). Explotación: NVD (publicado 26/11/2026).
+- Impacto: borrado de filtros MongoDB y toma de control de cuentas globales.
+- Mitigación: actualizar a 4.0.0+.
+
+### Tabla comparativa
+
+| CVE | Producto | CVSS | Explotación | Acción |
+|---|---|---|---|---|
+| CVE-2026-133968 | MONAI Label | 9.8 | KEV | Actualizar + aislar |
+| CVE-2026-134624 | N-able MailAssure | 9.1 | KEV | Actualizar + restringir API |
+| CVE-2026-133951 | WP Simple Membership | 9.8 | PoC | Actualizar plugin |
+| CVE-2026-137498/99 | Budibase | 8.x-9.8 | NVD | Actualizar a 4.0.0+ |
+
+## 6. Contexto de seguimiento
+
+- CVE-2026-133323 y otros Mitel MiCollab: sin novedades desde 25/11.
+- CVE-2026-133469 Xen Orchestra: sin novedades.
+- CVE-2026-103406 HPE Juniper: sin novedades.
+- CVE-2026-129713 Danfoss: sin parche, mitigaciones vigentes.
+
+## 7. Cobertura y limitaciones
+
+Cobertura: CISA KEV, NVD, MITRE ATT&CK. Limitaciones: sin acceso a feeds privados; EPSS estimado; IOCs no disponibles para estos CVE en fuentes públicas.
+
+## META DEL PANEL (no se muestra en la tarjeta)
+
+```json
+{"fecha":"2026-11-26","cves":[{"id":"CVE-2026-133968","producto":"MONAI Label","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar MONAI Label y aislar servicio","runbook":"1) Identificar instancias MONAI Label 2) Aplicar parche del fabricante 3) Aislar servicio de etiquetado 4) Revisar logs de deserializacion","epss":null,"iocs":[],"sigma":"detection: deserialization payload in MONAI Label requests","playbook":{"triage":["Verificar version de MONAI Label","Revisar logs de deserializacion"],"contencion":["Aislar servicio de etiquetado","Bloquear trafico no confiable"],"verificacion":["Confirmar version parcheada","Validar ausencia de ejecucion de comandos"]}}, {"id":"CVE-2026-134624","producto":"N-able MailAssure","cvss":9.1,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar MailAssure y restringir API","runbook":"1) Identificar instancias MailAssure 2) Aplicar parche 3) Restringir API a IPs de confianza 4) Revisar logs SSRF","epss":null,"iocs":[],"sigma":"detection: SSRF patterns in MailAssure API logs","playbook":{"triage":["Verificar version de MailAssure","Revisar logs de API"],"contencion":["Restringir API a IPs confiables","Bloquear destinos internos"],"verificacion":["Confirmar version parcheada","Validar ausencia de SSRF"]}}, {"id":"CVE-2026-133951","producto":"WordPress Simple Membership","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"PoC","parche":"Actualizar plugin Simple Membership","runbook":"1) Identificar sitios con plugin 2) Actualizar plugin 3) Auditar usuarios y roles 4) Revisar logs de creacion de cuentas","epss":null,"iocs":[],"sigma":"detection: privilege escalation in Simple Membership plugin","playbook":{"triage":["Verificar version del plugin","Auditar usuarios recientes"],"contencion":["Actualizar plugin","Deshabilitar registro si no es necesario"],"verificacion":["Confirmar version corregida","Validar roles de usuario"]}}, {"id":"CVE-2026-137498","producto":"Budibase Server","cvss":8.0,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"sin explotacion confirmada","parche":"Actualizar Budibase a 4.0.0+","runbook":"1) Identificar instancias Budibase 2) Actualizar a 4.0.0+ 3) Validar filtros MongoDB 4) Revisar cuentas globales","epss":null,"iocs":[],"sigma":"detection: prototype pollution in Budibase","playbook":{"triage":["Verificar version de Budibase","Revisar filtros MongoDB"],"contencion":["Actualizar a 4.0.0+","Aislar instancia"],"verificacion":["Confirmar version","Validar integridad de datos"]}}, {"id":"CVE-2026-137499","producto":"Budibase","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1078","nombre":"Valid Accounts"},"explotacion":"sin explotacion confirmada","parche":"Actualizar Budibase a 4.0.0+","runbook":"1) Identificar instancias Budibase 2) Actualizar a 4.0.0+ 3) Revisar cuentas globales sin contrasena 4) Forzar rotacion de credenciales","epss":null,"iocs":[],"sigma":"detection: auth bypass in Budibase global accounts","playbook":{"triage":["Verificar version de Budibase","Revisar cuentas globales"],"contencion":["Actualizar a 4.0.0+","Forzar rotacion de credenciales"],"verificacion":["Confirmar version","Validar autenticacion"]}}],"otras_amenazas":[]}
+```
+
+
 # 📋 Informe CTI Diario - 2026-11-25
 
 **Fecha del informe:** 26/11/2026  **Cobertura:** novedades del miércoles 25 de noviembre de 2026 (America/Santiago)
