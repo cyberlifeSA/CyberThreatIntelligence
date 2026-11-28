@@ -1,3 +1,140 @@
+# 📊 Informe CTI Diario - 2026-11-27
+
+**Fecha del informe:** 28/11/2026  **Cobertura:** novedades del viernes 27 de noviembre de 2026 (America/Santiago)
+**Fuentes:** CISA (KEV/Alertas), NIST NVD, MITRE ATT&CK, CERTs, fabricantes oficiales, VulnCheck KEV, Shadowserver, GitHub Security Advisories.
+**Leyenda de severidad:** 🔴 Crítica (9-10) 🟠 Alta (7-8.9) 🟡 Media (4-6.9) 🟢 Baja (<4).
+**Siglas:** KEV = Known Exploited Vulnerabilities (catálogo CISA de vulnerabilidades con explotación confirmada); CVSS = Common Vulnerability Scoring System (puntaje de severidad 0-10); CWE = Common Weakness Enumeration (tipo de debilidad); PoC = Proof of Concept (código de prueba de explotación); EOL = End of Life (fin de soporte); APT = Advanced Persistent Threat (amenaza persistente avanzada); EPSS = Exploit Prediction Scoring System (probabilidad de explotación en 30 días); RCE = Remote Code Execution; SSRF = Server-Side Request Forgery; LPE = Local Privilege Escalation; WFS = Web Feature Service.
+
+> 🔴 **Resumen en 30 segundos:** CISA añadió 3 CVE al KEV el 27/11: dos de GeoServer (CVE-2026-120705, CVE-2026-129243) y uno de Drupal Core (CVE-2026-136716), todos con plazo FCEB 30/11 y explotación activa. Los de GeoServer se encadenan con otros CVE para lograr RCE no autenticado.
+
+## 1. Turno de vigilancia — qué atender primero
+
+### Top 5 atacar hoy
+
+| # | CVE | Severidad | Acción | Tiempo est. |
+|---|---|---|---|---|
+| 1 | CVE-2026-136716 (Drupal Core) | 🔴 9.8 | Actualizar Drupal a 10.6.23/11.3.23/11.4.14; ejecutar update.php; asegurar installer. | 1-2 h |
+| 2 | CVE-2026-129243 (GeoServer) | 🟠 8.8 | Actualizar GeoServer a 2.27.7/2.28.6/3.0.2; revisar stored queries. | 1-2 h |
+| 3 | CVE-2026-120705 (GeoServer) | 🟠 8.6 | Mismo parche que arriba; restringir WFS anónimo. | 1-2 h |
+| 4 | CVE-2026-137481 (Traefik) | 🔴 9.3 | Actualizar Traefik a 2.11.62/3.7.18. | 1 h |
+| 5 | CVE-2026-137738 (RealVNC Viewer) | 🔴 9.8 | Actualizar RealVNC Viewer a versión corregida. | 1 h |
+
+### Prioridades
+
+| # | Prioridad | Acción |
+|---|---|---|
+| 1 | 🔴 P1 - Drupal Core (CVE-2026-136716) | RCE vía installer expuesto; actualizar + update.php + asegurar install.php. |
+| 2 | 🟠 P1 - GeoServer (CVE-2026-120705/129243) | Explotación activa, cadena RCE no autenticado; parchear y revisar stored queries. |
+| 3 | 🔴 P2 - Traefik (CVE-2026-137481) | Bypass de middleware de autenticación; actualizar. |
+| 4 | 🔴 P2 - RealVNC Viewer (CVE-2026-137738) | Out-of-bounds write; actualizar. |
+| 5 | 🟢 General | Vigilar NVD/KEV; verificar Shadowserver para explotación en Internet. |
+
+> ℹ️ CISA añadió los 3 CVE al KEV el 27/11 con plazo FCEB 30/11. GeoServer parche disponible desde octubre (3.0.2/2.28.6/2.27.7). Drupal publicó SA-CORE-2026-019 el 25/11.
+
+## 2. Recomendaciones SOC L1
+
+1. 🔴 **Drupal Core (CVE-2026-136716):** actualizar a 10.6.23/11.3.23/11.4.14; ejecutar update.php; asegurar install.php; revisar logs de la cuenta 1.
+2. 🟠 **GeoServer (CVE-2026-120705/129243):** actualizar a 3.0.2/2.28.6/2.27.7; revisar carpetas wfs/query por stored queries no creados; cambiar contraseñas admin si hay exposición.
+3. 🔴 **Traefik (CVE-2026-137481):** actualizar a 2.11.62/3.7.18; revisar middlewares de autenticación.
+4. 🔴 **RealVNC Viewer (CVE-2026-137738):** actualizar a versión corregida.
+5. 🟢 **General:** monitorear NVD/KEV y Shadowserver para nuevas inclusiones.
+
+## 3. Recomendaciones SOC L2
+
+- Hardening: restringir acceso a install.php en Drupal; deshabilitar WFS anónimo en GeoServer; restringir middlewares de Traefik.
+- Threat hunting: buscar stored queries no autorizados en GeoServer; accesos a install.php en Drupal; requests con service param prefijado.
+- Tuning: crear reglas Sigma/YARA para patrones de XML injection en WFS y bypass de autorización por prefijo.
+- Automatización: integrar KEV en flujo de parcheo con alertas de plazo 3 días.
+- Mejora de proceso: inventario de instancias GeoServer/Drupal/Traefik; verificación de versiones EOL.
+
+## 4. Resumen ejecutivo
+
+- CISA añadió 3 CVE al KEV el 27/11: 2 de GeoServer y 1 de Drupal Core, todos con plazo FCEB 30/11.
+- GeoServer: cadena de RCE no autenticado combinando 5 CVE; parche disponible desde octubre.
+- Drupal: follow-up de SA-CORE-2026-017; sitios en estado de instalación inusual siguen vulnerables.
+- Traefik (CVE-2026-137481, 9.3) y RealVNC Viewer (CVE-2026-137738, 9.8) publicados el 27/11 sin explotación confirmada.
+
+## 5. Hallazgos
+
+### En simple
+
+GeoServer es un servidor de mapas de código abierto muy usado por gobiernos y utilities. Dos de sus fallos (lectura de archivos + bypass de autorización) se explotan activamente y se encadenan con otros para lograr ejecución remota de código sin autenticación; el riesgo es compromiso total del servidor y robo de credenciales/configuración. Drupal Core es un CMS muy extendido; su instalador, si queda expuesto en estado de instalación inusual, permite takeover del sitio; el riesgo es pérdida total del sitio y datos. Traefik es un reverse proxy con un bypass de middleware de autenticación; RealVNC Viewer tiene un out-of-bounds write; ambos críticos pero sin explotación confirmada en la calle.
+
+### Detalle técnico
+
+**CVE-2026-120705 — OSGeo GeoServer XML Injection**
+- **CVE:** CVE-2026-120705 | **CVSS 3.1:** 8.6 (High) | **CWE:** CWE-91, CWE-611, CWE-918 | **EPSS:** no disponible
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application)
+- **Productos afectados:** GeoServer 2.27.6 y anteriores, 2.28.0-2.28.5, 3.0.0-3.0.1; GeoTools <33.7/34.6/35.2
+- **Explotación:** KEV (añadido 27/11), explotación activa confirmada (watchTowr honeypot), PoC público (Nuclei template)
+- **Impacto:** lectura arbitraria de archivos locales + SSRF; encadenado con otros CVE para RCE no autenticado
+- **Mitigación:** actualizar a 2.27.7/2.28.6/3.0.2 y GeoTools 33.7/34.6/35.2; restringir WFS anónimo; bloquear service param con slash en proxy
+- **IOCs:** requests WFS GetFeatureById con ID malicioso; stored queries en data directory wfs/query
+- **Sigma:** `selection: cs-uri-query|contains: 'GetFeatureById' AND cs-uri-query|contains: '..'` (detección simplificada)
+- **Playbook:** Triage: verificar versión GeoServer y exposición WFS. Contención: restringir WFS anónimo, bloquear slash en service param. Verificación: revisar wfs/query por stored queries no creados, cambiar contraseñas admin.
+
+**CVE-2026-129243 — OSGeo GeoServer Incorrect Authorization**
+- **CVE:** CVE-2026-129243 | **CVSS 3.1:** 8.8 (High) | **CWE:** CWE-863 | **EPSS:** no disponible
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application)
+- **Productos afectados:** GeoServer 2.27.6 y anteriores, 2.28.0-2.28.5, 3.0.0-3.0.1
+- **Explotación:** KEV (añadido 27/11), explotación activa confirmada
+- **Impacto:** bypass de service-level security rules vía prefixed service param (x/WFS), permite crear/deletar stored queries
+- **Mitigación:** mismo parche (2.27.7/2.28.6/3.0.2); bloquear service param con slash en proxy
+- **IOCs:** requests con service param prefijado (x/WFS); stored queries no autorizados
+- **Sigma:** `selection: cs-uri-query|contains: 'service=x/'`
+- **Playbook:** Triage: verificar versión y reglas de service security. Contención: bloquear slash en service param. Verificación: auditar stored queries y logs de acceso.
+
+**CVE-2026-136716 — Drupal Core Improper Check**
+- **CVE:** CVE-2026-136716 | **CVSS 3.1:** 9.8 (Critical, CISA-ADP) | **CWE:** CWE-754 | **EPSS:** 1.2%
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application)
+- **Productos afectados:** Drupal <10.6.23, 11.0.0-11.3.23, 11.4.0-11.4.14
+- **Explotación:** KEV (añadido 27/11), explotación activa confirmada (Drupal.org, NHS England)
+- **Impacto:** takeover del sitio vía installer expuesto en estado de instalación inusual/incompleto
+- **Mitigación:** actualizar a 10.6.23/11.3.23/11.4.14; ejecutar update.php; asegurar install.php
+- **IOCs:** accesos a install.php; cambios en cuenta 1 (user 1)
+- **Sigma:** `selection: cs-uri-stem|endswith: '/install.php' AND cs-status: 200`
+- **Playbook:** Triage: verificar versión Drupal y exposición de install.php. Contención: bloquear install.php en WAF/proxy. Verificación: ejecutar update.php; verificar cuenta 1; revisar logs.
+
+**CVE-2026-137481 — Traefik Auth Middleware Bypass**
+- **CVE:** CVE-2026-137481 | **CVSS:** 9.3 | **EPSS:** no disponible
+- **MITRE ATT&CK:** T1190 (Exploit Public-Facing Application)
+- **Productos afectados:** Traefik <2.11.62, <3.7.18
+- **Explotación:** PoC (VulnCheck), sin explotación confirmada en KEV
+- **Impacto:** bypass de middlewares de autenticación vía paths como /..;x/
+- **Mitigación:** actualizar a 2.11.62/3.7.18
+- **IOCs:** requests con paths /..;x/
+- **Sigma:** `selection: cs-uri-stem|contains: '/..;'`
+- **Playbook:** Triage: verificar versión Traefik. Contención: actualizar. Verificación: probar middleware con path malicioso.
+
+**CVE-2026-137738 — RealVNC Viewer Out-of-bounds Write**
+- **CVE:** CVE-2026-137738 | **CVSS:** 9.8 | **EPSS:** no disponible
+- **MITRE ATT&CK:** T1203 (Exploitation for Client Execution)
+- **Productos afectados:** RealVNC Viewer 8.x
+- **Explotación:** sin explotación confirmada
+- **Impacto:** out-of-bounds write, posible RCE en cliente
+- **Mitigación:** actualizar a versión corregida
+- **IOCs:** no disponibles
+- **Sigma:** no disponible
+- **Playbook:** Triage: verificar versión RealVNC. Contención: actualizar. Verificación: confirmar versión parcheada.
+
+## 6. Contexto de seguimiento
+
+- CVE-2026-136716 (Drupal): nuevo en KEV 27/11, follow-up de CVE-2026-132165 (SA-CORE-2026-017); sin cambios adicionales.
+- CVE-2026-120705/129243 (GeoServer): nuevos en KEV 27/11; explotación activa desde 25/11 (watchTowr honeypot).
+- CVE-2026-137481 (Traefik): publicado 27/11, sin KEV.
+- CVE-2026-137738 (RealVNC): publicado 27/11, sin KEV.
+
+## 7. Cobertura y limitaciones
+
+- Fuentes: CISA KEV, NVD, fabricantes (GeoServer, Drupal, Traefik, RealVNC), CERTs (NHS England, Canadian Centre).
+- Limitaciones: EPSS no disponible para CVE-2026-120705, 129243, 137481, 137738; NVD sin score para GeoServer (CVSS de GeoServer/CISA).
+- Shadowserver y VulnCheck no consultados directamente en esta corrida.
+
+```json
+{"fecha":"2026-11-27","cves":[{"id":"CVE-2026-136716","producto":"Drupal Core","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 10.6.23/11.3.23/11.4.14 + update.php + asegurar install.php","runbook":"1. Verificar versión Drupal y exposición de install.php. 2. Actualizar core. 3. Ejecutar update.php. 4. Asegurar install.php y revisar cuenta 1.","epss":0.012,"iocs":["accesos a install.php","cambios en cuenta 1 (user 1)"],"sigma":"selection: cs-uri-stem|endswith: '/install.php' AND cs-status: 200","playbook":{"triage":["Verificar versión Drupal y exposición de install.php"],"contencion":["Bloquear install.php en WAF/proxy"],"verificacion":["Ejecutar update.php","Verificar cuenta 1","Revisar logs"]}}, {"id":"CVE-2026-129243","producto":"GeoServer","cvss":8.8,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 2.27.7/2.28.6/3.0.2; bloquear service param con slash en proxy","runbook":"1. Verificar versión GeoServer. 2. Actualizar. 3. Bloquear slash en service param. 4. Auditar stored queries.","epss":null,"iocs":["requests con service param prefijado (x/WFS)","stored queries no autorizados"],"sigma":"selection: cs-uri-query|contains: 'service=x/'","playbook":{"triage":["Verificar versión y reglas de service security"],"contencion":["Bloquear slash en service param"],"verificacion":["Auditar stored queries y logs de acceso"]}}, {"id":"CVE-2026-120705","producto":"GeoServer","cvss":8.6,"severidad":"Alta","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"KEV","parche":"Actualizar a 2.27.7/2.28.6/3.0.2 + GeoTools 33.7/34.6/35.2; restringir WFS anónimo","runbook":"1. Verificar versión GeoServer y exposición WFS. 2. Actualizar. 3. Restringir WFS anónimo. 4. Revisar wfs/query.","epss":null,"iocs":["requests WFS GetFeatureById con ID malicioso","stored queries en data directory wfs/query"],"sigma":"selection: cs-uri-query|contains: 'GetFeatureById' AND cs-uri-query|contains: '..'","playbook":{"triage":["Verificar versión GeoServer y exposición WFS"],"contencion":["Restringir WFS anónimo","Bloquear slash en service param"],"verificacion":["Revisar wfs/query por stored queries no creados","Cambiar contraseñas admin"]}}, {"id":"CVE-2026-137481","producto":"Traefik","cvss":9.3,"severidad":"Critica","mitre":{"id":"T1190","nombre":"Exploit Public-Facing Application"},"explotacion":"PoC","parche":"Actualizar a 2.11.62/3.7.18","runbook":"1. Verificar versión Traefik. 2. Actualizar. 3. Probar middleware con path malicioso.","epss":null,"iocs":["requests con paths /..;x/"],"sigma":"selection: cs-uri-stem|contains: '/..;'","playbook":{"triage":["Verificar versión Traefik"],"contencion":["Actualizar"],"verificacion":["Probar middleware con path malicioso"]}}, {"id":"CVE-2026-137738","producto":"RealVNC Viewer","cvss":9.8,"severidad":"Critica","mitre":{"id":"T1203","nombre":"Exploitation for Client Execution"},"explotacion":"sin explotacion confirmada","parche":"Actualizar a versión corregida","runbook":"1. Verificar versión RealVNC. 2. Actualizar. 3. Confirmar versión parcheada.","epss":null,"iocs":[],"sigma":"no disponible","playbook":{"triage":["Verificar versión RealVNC"],"contencion":["Actualizar"],"verificacion":["Confirmar versión parcheada"]}}],"otras_amenazas":[]}
+```
+path: C:/Users/Seba/AppData/Local/Temp/opencode/new_entry.md
+
 # 📋 Informe CTI Diario - 2026-11-26
 
 **Fecha del informe:** 27/11/2026  **Cobertura:** novedades del jueves 26 de noviembre de 2026 (America/Santiago)
